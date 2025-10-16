@@ -22,7 +22,7 @@ public class SimpleBoard implements Board {
         currentGameMatrix = new int[width][height];
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
-        score = new Score();
+        score = new Score();        
     }
 
     @Override

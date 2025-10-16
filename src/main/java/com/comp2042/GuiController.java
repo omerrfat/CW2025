@@ -77,6 +77,18 @@ public class GuiController implements Initializable {
                         keyEvent.consume();
                     }
                 }
+
+                // pause toggle key
+                if (keyEvent.getCode() == KeyCode.P) {
+                    togglePause();
+                    keyEvent.consume();
+                }
+
+                // restart key
+                if (keyEvent.getCode() == KeyCode.R) {
+                    newGame(null);
+                    keyEvent.consume();
+                }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
@@ -217,6 +229,24 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+    }
+
+    public void togglePause() {
+        if (isPause.getValue() == Boolean.TRUE) {
+            // resumes the game
+            timeLine.play();
+            isPause.setValue(Boolean.FALSE);
+            groupNotification.getChildren().clear(); // remove "Paused" message
+        } else {
+            // pauses the game
+            timeLine.pause();
+            isPause.setValue(Boolean.TRUE);
+            NotificationPanel pausedMsg = new NotificationPanel("PAUSED");
+            groupNotification.getChildren().add(pausedMsg);
+            pausedMsg.showScore(groupNotification.getChildren());
+            gamePanel.setOpacity(isPause.getValue() ? 0.6 : 1.0); // reduces opacity of the board when paused
+        }
+        gamePanel.requestFocus();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
