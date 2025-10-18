@@ -92,7 +92,13 @@ public class GuiController implements Initializable {
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
+                // Using key Space to move down hard
+                if (keyEvent.getCode() == KeyCode.SPACE) {
+                    moveDownHard(new MoveEvent(EventType.DOWN, EventSource.USER));
+                    keyEvent.consume();
+                }
             }
+
         });
         gameOverPanel.setVisible(false);
 
@@ -206,6 +212,18 @@ public class GuiController implements Initializable {
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
+    }
+
+    // method for moving hard down, using space key
+    private void moveDownHard(MoveEvent moveEvent) {
+        DownData dd = eventListener.onHardDropEvent(moveEvent);
+        if (dd != null) {
+            refreshBrick(dd.getViewData());
+            if (dd.getClearRow() != null && dd.getClearRow().getLinesRemoved() > 0) {
+                // using the board matrix from the controller via eventListener
+                refreshGameBackground(((GameController) eventListener).getBoardMatrix());
+            }
+        }
     }
 
     public void setEventListener(InputEventListener eventListener) {

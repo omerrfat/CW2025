@@ -10,5 +10,10 @@ public interface InputEventListener {
 
     ViewData onRotateEvent(MoveEvent event);
 
+    // New method for hard dropping of the blocks
+    DownData onHardDropEvent(MoveEvent event);
+
     void createNewGame();
+
+
 }
