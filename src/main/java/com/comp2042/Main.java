@@ -11,59 +11,81 @@ import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.geometry.Pos;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.*;
-/**
- * @author Umer Imran
- * @version 2.0
- */
+
 public class Main extends Application {
 
-    // updating Start method to display a simple start menu, that displays Play, Controls and Exit
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // --- Title text ---
+        // Title
         Text title = new Text("TETRIS");
         title.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
-        title.setFill(Color.DARKBLUE);
+        title.setFill(Color.BLUEVIOLET);
         title.setTextAlignment(TextAlignment.CENTER);
 
-        // --- Buttons ---
+        // Buttons
         Button playButton = new Button("Play");
         Button controlsButton = new Button("Controls");
         Button exitButton = new Button("Exit");
 
-        // --- Style buttons ---
-        String buttonStyle = "-fx-font-size: 16px; -fx-padding: 8 20;";
+        String buttonStyle = "-fx-font-size: 16px; -fx-padding: 8 20; -fx-background-color: rgba(0,0,0,0.6); -fx-text-fill: white;";
         playButton.setStyle(buttonStyle);
         controlsButton.setStyle(buttonStyle);
         exitButton.setStyle(buttonStyle);
 
-        // --- Layout for menu ---
+        // Layout
         VBox menuLayout = new VBox(20, title, playButton, controlsButton, exitButton);
         menuLayout.setAlignment(Pos.CENTER);
-        Scene menuScene = new Scene(menuLayout, 400, 500);
+        menuLayout.setPrefSize(400, 500);
 
-        // --- Button Actions ---
+        // proper background image handling
+        try {
+            // Attempt to get the resource URL
+            URL imageUrl = getClass().getResource("/tetris-figures-retro-game-vector-illustration_756957-674.jpg");
+
+            if (imageUrl != null) {
+                // Resource found, proceed with loading
+                Image backgroundImage = new Image(imageUrl.toExternalForm());
+                BackgroundImage bgImage = new BackgroundImage(
+                        backgroundImage,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        new BackgroundSize(100, 100, true, true, false, false)
+                );
+                menuLayout.setBackground(new Background(bgImage));
+                System.out.println("Background image loaded successfully!"); // Added confirmation
+            } else {
+                // Resource was not found (imageUrl is null)
+                System.err.println("ERROR: Background image resource not found at /backgrounds/retro.png");
+                System.err.println("(Check the file path and resource folder structure in your project.)");
+            }
+
+        } catch (Exception e) {
+            // Catch other exceptions during image creation or background setting
+            System.err.println("Could not load background image: " + e.getMessage());
+            e.printStackTrace(); // Print the stack trace for full debugging info
+        }
+
+        Scene menuScene = new Scene(menuLayout);
+
+        // Buttons
         playButton.setOnAction(e -> startGame(primaryStage));
         controlsButton.setOnAction(e -> showControls());
         exitButton.setOnAction(e -> primaryStage.close());
 
-        // --- Display menu ---
         primaryStage.setTitle("Tetris");
         primaryStage.setScene(menuScene);
         primaryStage.show();
     }
 
-    /**
-     * loads the actual Tetris game scene (from FXML)
-     */
     private void startGame(Stage primaryStage) {
         try {
             URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
@@ -82,9 +104,6 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * shows a small pop-up with key controls
-     */
     private void showControls() {
         Alert controls = new Alert(Alert.AlertType.INFORMATION);
         controls.setTitle("Controls");
