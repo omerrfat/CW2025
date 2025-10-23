@@ -51,6 +51,8 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private Group ghostLayer = new Group();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -59,6 +61,7 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+
                 if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
                         refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
@@ -106,6 +109,8 @@ public class GuiController implements Initializable {
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+
+        gamePanel.getChildren().add(ghostLayer);
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -185,6 +190,39 @@ public class GuiController implements Initializable {
                 }
             }
         }
+        // --- GHOST PIECE (SHADOW) DRAWING ---
+        int[][] ghost = brick.getGhostCoords();
+
+        // remove any previously drawn ghost blocks
+        gamePanel.getChildren().removeIf(node ->
+                node instanceof Rectangle &&
+                        node.getUserData() != null &&
+                        node.getUserData().equals("ghost")
+        );
+
+        if (ghost != null) {
+            for (int[] coord : ghost) {
+                int x = coord[1];
+                int y = coord[0];
+
+                // creating transparent ghost block
+                Rectangle ghostBlock = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                ghostBlock.setFill(Color.color(1, 1, 1, 0.2)); // white, 20% opacity
+                ghostBlock.setStroke(Color.GRAY);
+                ghostBlock.setStrokeWidth(1);
+                ghostBlock.setUserData("ghost");
+
+                // placing correctly in the GridPane
+                GridPane.setColumnIndex(ghostBlock, x);
+                GridPane.setRowIndex(ghostBlock, y - 2); // adjust for hidden top rows
+
+                // add to the grid
+                gamePanel.getChildren().add(ghostBlock);
+            }
+        }
+
+        groupNotification.toFront();
+
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -206,12 +244,16 @@ public class GuiController implements Initializable {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                notificationPanel.setLayoutX(100);  // adjust to board width
+                notificationPanel.setLayoutY(100);  // adjust to board height
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+                groupNotification.toFront();
             }
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
+        groupNotification.toFront();
     }
 
     // method for moving hard down, using space key
@@ -224,6 +266,7 @@ public class GuiController implements Initializable {
                 refreshGameBackground(((GameController) eventListener).getBoardMatrix());
             }
         }
+        groupNotification.toFront();
     }
 
     public void setEventListener(InputEventListener eventListener) {

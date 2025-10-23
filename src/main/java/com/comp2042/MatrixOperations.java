@@ -96,4 +96,16 @@ public class MatrixOperations {
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
 
+    public static int[][] getOccupiedCells(int[][] shape, int colOffset, int rowOffset) {
+        java.util.List<int[]> coords = new java.util.ArrayList<>();
+        for (int r = 0; r < shape.length; r++) {
+            for (int c = 0; c < shape[r].length; c++) {
+                if (shape[r][c] != 0) {
+                    coords.add(new int[]{rowOffset + r, colOffset + c});
+                }
+            }
+        }
+        return coords.toArray(new int[0][0]);
+    }
+
 }

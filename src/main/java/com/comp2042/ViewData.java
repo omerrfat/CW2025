@@ -29,4 +29,18 @@ public final class ViewData {
     public int[][] getNextBrickData() {
         return MatrixOperations.copy(nextBrickData);
     }
+
+
+    /**
+     * Getter and Setter for GhostCoords
+     */
+    private int[][] ghostCoords;
+
+    public int[][] getGhostCoords() {
+        return ghostCoords;
+    }
+
+    public void setGhostCoords(int[][] ghostCoords) {
+        this.ghostCoords = ghostCoords;
+    }
 }

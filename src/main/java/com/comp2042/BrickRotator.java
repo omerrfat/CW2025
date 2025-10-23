@@ -6,6 +6,8 @@ public class BrickRotator {
 
     private Brick brick;
     private int currentShape = 0;
+    private Brick currentBrick;
+    private Brick nextBrick;
 
     public NextShapeInfo getNextShape() {
         int nextShape = currentShape;
@@ -24,6 +26,15 @@ public class BrickRotator {
     public void setBrick(Brick brick) {
         this.brick = brick;
         currentShape = 0;
+    }
+
+    /**
+     *
+     * @return ghost of the next brick on the bottom
+     */
+    public int[][] getNextBrickShape() {
+        if (nextBrick == null) return new int[0][0];
+        return nextBrick.getShapeMatrix().get(0);
     }
 
 
