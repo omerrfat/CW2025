@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -95,7 +96,7 @@ public class GuiController implements Initializable {
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
-                // Using key Space to move down hard
+                // using key Space to move down hard
                 if (keyEvent.getCode() == KeyCode.SPACE) {
                     moveDownHard(new MoveEvent(EventType.DOWN, EventSource.USER));
                     keyEvent.consume();
@@ -110,6 +111,7 @@ public class GuiController implements Initializable {
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
 
+        ghostLayer.setMouseTransparent(true);
         gamePanel.getChildren().add(ghostLayer);
     }
 
@@ -173,7 +175,7 @@ public class GuiController implements Initializable {
                 returnPaint = Color.BURLYWOOD;
                 break;
             default:
-                returnPaint = Color.WHITE;
+                returnPaint = Color.TRANSPARENT;
                 break;
         }
         return returnPaint;
@@ -193,7 +195,7 @@ public class GuiController implements Initializable {
         // --- GHOST PIECE (SHADOW) DRAWING ---
         int[][] ghost = brick.getGhostCoords();
 
-        // remove any previously drawn ghost blocks
+        // remove any previously drawn ghost blocks that were added directly to the GridPane
         gamePanel.getChildren().removeIf(node ->
                 node instanceof Rectangle &&
                         node.getUserData() != null &&
@@ -211,17 +213,21 @@ public class GuiController implements Initializable {
                 ghostBlock.setStroke(Color.GRAY);
                 ghostBlock.setStrokeWidth(1);
                 ghostBlock.setUserData("ghost");
+                ghostBlock.setMouseTransparent(true);
 
-                // placing correctly in the GridPane
+                // place in the main grid using GridPane coordinates (must be direct child of GridPane)
                 GridPane.setColumnIndex(ghostBlock, x);
                 GridPane.setRowIndex(ghostBlock, y - 2); // adjust for hidden top rows
 
-                // add to the grid
+                // add directly to the gamePanel so GridPane constraints apply
                 gamePanel.getChildren().add(ghostBlock);
             }
         }
 
-        groupNotification.toFront();
+        // keep notifications layer above everything, unless the game is over
+        if (!isGameOver.getValue()) {
+            groupNotification.toFront();
+        }
 
     }
 
@@ -239,24 +245,37 @@ public class GuiController implements Initializable {
         rectangle.setArcWidth(9);
     }
 
+    /**
+     *
+     * @param event added logic for Points screen that got messed up while I was adding ghost shadow logic
+     */
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
-                notificationPanel.setLayoutX(100);  // adjust to board width
-                notificationPanel.setLayoutY(100);  // adjust to board height
+                // center within the gamePanel
+                double panelW = gamePanel.getWidth();
+                double panelH = gamePanel.getHeight();
+                double x = gamePanel.getLayoutX() + (panelW - notificationPanel.getMinWidth()) / 2.0;
+                double y = gamePanel.getLayoutY() + (panelH - notificationPanel.getMinHeight()) / 2.0;
+                notificationPanel.setLayoutX(x);
+                notificationPanel.setLayoutY(y);
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
-                groupNotification.toFront();
+                if (!isGameOver.getValue()) {
+                    groupNotification.toFront();
+                }
             }
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
-        groupNotification.toFront();
+        if (!isGameOver.getValue()) {
+            groupNotification.toFront();
+        }
     }
 
-    // method for moving hard down, using space key
+    // method for moving hard down, using key SPACE
     private void moveDownHard(MoveEvent moveEvent) {
         DownData dd = eventListener.onHardDropEvent(moveEvent);
         if (dd != null) {
@@ -266,7 +285,9 @@ public class GuiController implements Initializable {
                 refreshGameBackground(((GameController) eventListener).getBoardMatrix());
             }
         }
-        groupNotification.toFront();
+        if (!isGameOver.getValue()) {
+            groupNotification.toFront();
+        }
     }
 
     public void setEventListener(InputEventListener eventListener) {
@@ -278,7 +299,12 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timeLine.stop();
+        // remove only transient notifications; keep the GameOverPanel container inside groupNotification
+        groupNotification.getChildren().removeIf(node -> node instanceof NotificationPanel);
+        gamePanel.setOpacity(0.6);
+        // show `game over` panel above everything
         gameOverPanel.setVisible(true);
+        gameOverPanel.toFront();
         isGameOver.setValue(Boolean.TRUE);
     }
 
@@ -297,7 +323,8 @@ public class GuiController implements Initializable {
             // resumes the game
             timeLine.play();
             isPause.setValue(Boolean.FALSE);
-            groupNotification.getChildren().clear(); // remove "Paused" message
+            groupNotification.getChildren().removeIf(node -> node instanceof NotificationPanel); // remove only transient notification panels
+            gamePanel.setOpacity(1.0); // restore full opacity when resuming
         } else {
             // pauses the game
             timeLine.pause();
