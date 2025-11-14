@@ -34,8 +34,8 @@ public class MenuController {
 
             Stage stage = (Stage) playButton.getScene().getWindow();
             Scene gameScene = new Scene(root);
-            stage.setResizable(false);  // optional
-            stage.sizeToScene();        // <-- Auto-resize window to fit layout
+            stage.setResizable(false);
+            stage.sizeToScene();
             stage.setScene(gameScene);
             stage.setTitle("TetrisJFX");
             stage.show();
