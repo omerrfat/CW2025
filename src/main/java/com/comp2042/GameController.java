@@ -38,7 +38,9 @@ public class GameController implements InputEventListener {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
+                int bonus = clearRow.getScoreBonus();
+                board.getScore().add(bonus);
+                viewGuiController.showScoreBonus(bonus);
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
@@ -115,8 +117,10 @@ public class GameController implements InputEventListener {
             board.getScore().add(clearRow.getScoreBonus());
         }
 
-        // bonus points for hard drop distance (optional)
-        board.getScore().add(dropDistance * 2);
+        // bonus points for hard drop distance
+        int bonus = dropDistance * 2;
+        board.getScore().add(bonus);
+        viewGuiController.showScoreBonus(bonus);
 
         // spawn next brick
         if (board.createNewBrick()) {

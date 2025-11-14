@@ -20,6 +20,10 @@
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+    <VBox layoutX="195" layoutY="32" spacing="4">
+        <Label text="Score" styleClass="nextBrickLabel"/>
+        <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+    </VBox>
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

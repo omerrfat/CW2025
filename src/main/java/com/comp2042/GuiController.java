@@ -1,7 +1,9 @@
 package com.comp2042;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,14 +13,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -39,6 +44,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private Label scoreLabel;
 
     private Rectangle[][] displayMatrix;
 
@@ -294,7 +302,47 @@ public class GuiController implements Initializable {
         this.eventListener = eventListener;
     }
 
+    /**
+     * Displays a temporary popup below the score label (e.g., "+50").
+     * Implemented my own since the default code was being buggy due to the ghost shadow implementation
+     */
+    public void showScoreBonus(int bonus) {
+        Text popup = new Text("+" + bonus);
+        popup.setFont(Font.font("Verdana", 22));
+        popup.setFill(Color.WHITESMOKE);
+
+        // Position slightly below the score label
+        double startX = scoreLabel.getLayoutX() + 10;
+        double startY = scoreLabel.getLayoutY() + 30;
+        popup.setLayoutX(startX);
+        popup.setLayoutY(startY);
+
+        Pane parent = (Pane) scoreLabel.getParent();
+        parent.getChildren().add(popup);
+
+        // Move upward slightly
+        TranslateTransition moveUp = new TranslateTransition(Duration.millis(1000), popup);
+        moveUp.setByY(-20); // move up 20px
+
+        // Fade out
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(1000), popup);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+
+        // Play both animations together
+        moveUp.play();
+        fadeOut.play();
+
+        // Remove after fade
+        fadeOut.setOnFinished(e -> parent.getChildren().remove(popup));
+    }
+
     public void bindScore(IntegerProperty integerProperty) {
+        // Unbind previous binding if any then bind to the provided score property
+        if (scoreLabel.textProperty().isBound()) {
+            scoreLabel.textProperty().unbind();
+        }
+        scoreLabel.textProperty().bind(integerProperty.asString());
     }
 
     public void gameOver() {
