@@ -30,7 +30,6 @@ public class GameController implements InputEventListener {
 
     @Override
     public DownData onDownEvent(MoveEvent event) {
-        if (paused) return null; // ignore if paused
 
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
@@ -66,8 +65,7 @@ public class GameController implements InputEventListener {
     }
 
     @Override
-    public ViewData onLeftEvent(MoveEvent event) {
-        if (paused) return null;
+    public ViewData onLeftEvent(MoveEvent event){
 
         board.moveBrickLeft();
         return board.getViewData();
@@ -75,7 +73,6 @@ public class GameController implements InputEventListener {
 
     @Override
     public ViewData onRightEvent(MoveEvent event) {
-        if (paused) return null;
 
         board.moveBrickRight();
         return board.getViewData();
@@ -83,7 +80,6 @@ public class GameController implements InputEventListener {
 
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
-        if (paused) return null;
 
         board.rotateLeftBrick();
         return board.getViewData();

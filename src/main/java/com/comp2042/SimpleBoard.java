@@ -15,6 +15,7 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
     private Brick currentBrick;
+    private Brick nextBrick;  // stores the next piece
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -23,6 +24,7 @@ public class SimpleBoard implements Board {
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
+        nextBrick = brickGenerator.getBrick();  // generate first next brick
     }
 
     private boolean canMove(int[][] shape, int newRow, int newCol) {
@@ -109,7 +111,10 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        currentBrick = brickGenerator.getBrick();
+        // UPDATED: Use the stored nextBrick instead of generating new one
+        currentBrick = nextBrick;
+        nextBrick = brickGenerator.getBrick();  // Generate the new next brick
+
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(4, 0); // typically start near top
 
@@ -125,13 +130,18 @@ public class SimpleBoard implements Board {
     @Override
     public ViewData getViewData() {
         int[][] shape = brickRotator.getCurrentShape();
-        int[][] nextBrick = brickRotator.getNextBrickShape();
+
+        // Get the next brick shape directly from the nextBrick object
+        int[][] nextBrickShape = null;
+        if (nextBrick != null && nextBrick.getShapeMatrix() != null && !nextBrick.getShapeMatrix().isEmpty()) {
+            nextBrickShape = nextBrick.getShapeMatrix().get(0);  // Get first rotation state
+        }
 
         ViewData viewData = new ViewData(
                 shape,
                 (int) currentOffset.getX(),
                 (int) currentOffset.getY(),
-                nextBrick
+                nextBrickShape
         );
 
         // Add ghost info
@@ -161,6 +171,7 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
+        nextBrick = brickGenerator.getBrick();  // Generate new next brick for new game
         createNewBrick();
     }
 }

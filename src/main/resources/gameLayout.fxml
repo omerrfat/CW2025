@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import com.comp2042.GameOverPanel?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.Group?>
@@ -8,7 +10,7 @@
       xmlns:fx="http://javafx.com/fxml"
       prefWidth="420" prefHeight="510">
 
-    <!-- PREVIEW BRICK PANEL -->
+    <!-- CURRENT BRICK PANEL (for active piece) -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"
               layoutX="10" layoutY="0"/>
 
@@ -28,11 +30,23 @@
         </VBox>
     </Group>
 
-    <!-- SCORE PANEL -->
-    <VBox layoutX="300" layoutY="32" spacing="8">
-        <Label text="Score" styleClass="nextBrickLabel"/>
-        <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
-        <Group fx:id="scorePopupGroup"/>
+    <!-- RIGHT SIDE PANEL -->
+    <VBox layoutX="300" layoutY="32" spacing="20">
+        <!-- SCORE SECTION -->
+        <VBox spacing="8">
+            <Label text="Score" styleClass="nextBrickLabel"/>
+            <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+            <Group fx:id="scorePopupGroup"/>
+        </VBox>
+
+        <!-- NEXT PIECE PREVIEW SECTION -->
+        <VBox spacing="8" alignment="CENTER">
+            <Label text="Next" styleClass="nextBrickLabel"/>
+            <Pane styleClass="previewBox" prefWidth="100" prefHeight="100">
+                <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1"
+                          layoutX="20" layoutY="20"/>
+            </Pane>
+        </VBox>
     </VBox>
 
     <stylesheets>

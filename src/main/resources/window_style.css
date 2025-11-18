@@ -70,3 +70,20 @@
     -fx-fill: yellow;
     -fx-text-fill: yellow;
 }
+
+/* Next Brick Preview Box Styling */
+.previewBox {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-border-color: #666666;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.nextBrickLabel {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial";
+}
