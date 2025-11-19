@@ -163,7 +163,7 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Initialize the next brick preview panel
+     * initialize the next brick preview panel
      */
     private void initNextBrickPreview(ViewData brick) {
         if (nextBrickPanel == null || brick == null || brick.getNextBrickData() == null) {
@@ -176,6 +176,29 @@ public class GuiController implements Initializable {
         int[][] nextBrickData = brick.getNextBrickData();
         nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
 
+        // Calculate the actual width and height of the piece (non-transparent cells)
+        int minCol = nextBrickData[0].length;
+        int maxCol = -1;
+        int minRow = nextBrickData.length;
+        int maxRow = -1;
+
+        for (int i = 0; i < nextBrickData.length; i++) {
+            for (int j = 0; j < nextBrickData[i].length; j++) {
+                if (nextBrickData[i][j] != 0) {
+                    minRow = Math.min(minRow, i);
+                    maxRow = Math.max(maxRow, i);
+                    minCol = Math.min(minCol, j);
+                    maxCol = Math.max(maxCol, j);
+                }
+            }
+        }
+
+        // Calculate offset to center the piece in the preview box
+        int pieceWidth = maxCol - minCol + 1;
+        int pieceHeight = maxRow - minRow + 1;
+        int offsetCol = (nextBrickData[0].length - pieceWidth) / 2 - minCol;
+        int offsetRow = (nextBrickData.length - pieceHeight) / 2 - minRow;
+
         for (int i = 0; i < nextBrickData.length; i++) {
             for (int j = 0; j < nextBrickData[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
@@ -183,7 +206,8 @@ public class GuiController implements Initializable {
                 rectangle.setArcHeight(9);
                 rectangle.setArcWidth(9);
                 nextBrickRectangles[i][j] = rectangle;
-                nextBrickPanel.add(rectangle, j, i);
+                // Add with offset to center the piece
+                nextBrickPanel.add(rectangle, j + offsetCol, i + offsetRow);
             }
         }
     }
@@ -214,44 +238,25 @@ public class GuiController implements Initializable {
         }
     }
 
+
     private Paint getFillColor(int i) {
-        Paint returnPaint;
-        switch (i) {
-            case 0:
-                returnPaint = Color.TRANSPARENT;
-                break;
-            case 1:
-                returnPaint = Color.AQUA;
-                break;
-            case 2:
-                returnPaint = Color.BLUEVIOLET;
-                break;
-            case 3:
-                returnPaint = Color.DARKGREEN;
-                break;
-            case 4:
-                returnPaint = Color.YELLOW;
-                break;
-            case 5:
-                returnPaint = Color.RED;
-                break;
-            case 6:
-                returnPaint = Color.BEIGE;
-                break;
-            case 7:
-                returnPaint = Color.BURLYWOOD;
-                break;
-            default:
-                returnPaint = Color.TRANSPARENT;
-                break;
-        }
+        Paint returnPaint = switch (i) {
+            case 1 -> Color.AQUA;
+            case 2 -> Color.BLUEVIOLET;
+            case 3 -> Color.DARKGREEN;
+            case 4 -> Color.YELLOW;
+            case 5 -> Color.RED;
+            case 6 -> Color.BEIGE;
+            case 7 -> Color.BURLYWOOD;
+            default -> Color.TRANSPARENT;
+        };
         return returnPaint;
     }
 
 
     private void refreshBrick(ViewData brick) {
         if (brick == null) {
-            return; // Early return if brick is null
+            return; // Early return if the brick is null
         }
 
         if (isPause.getValue() == Boolean.FALSE) {
@@ -259,7 +264,7 @@ public class GuiController implements Initializable {
             int[][] brickData = brick.getBrickData();
             if (rectangles == null || rectangles.length != brickData.length ||
                     rectangles[0].length != brickData[0].length) {
-                // Reinitialize rectangles array if dimensions changed
+                // Reinitialize rectangle array if dimensions changed
                 brickPanel.getChildren().clear();
                 rectangles = new Rectangle[brickData.length][brickData[0].length];
                 for (int i = 0; i < brickData.length; i++) {
@@ -345,14 +350,7 @@ public class GuiController implements Initializable {
             DownData downData = eventListener.onDownEvent(event);
             if (downData != null) {
                 if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                    NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
-                    // center within the gamePanel
-                    double panelW = gamePanel.getWidth();
-                    double panelH = gamePanel.getHeight();
-                    double x = gamePanel.getLayoutX() + (panelW - notificationPanel.getMinWidth()) / 2.0;
-                    double y = gamePanel.getLayoutY() + (panelH - notificationPanel.getMinHeight()) / 2.0;
-                    notificationPanel.setLayoutX(x);
-                    notificationPanel.setLayoutY(y);
+                    NotificationPanel notificationPanel = getNotificationPanel(downData);
                     groupNotification.getChildren().add(notificationPanel);
                     notificationPanel.showScore(groupNotification.getChildren());
                     if (!isGameOver.getValue()) {
@@ -366,6 +364,18 @@ public class GuiController implements Initializable {
         if (!isGameOver.getValue()) {
             groupNotification.toFront();
         }
+    }
+
+    private NotificationPanel getNotificationPanel(DownData downData) {
+        NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+        // center within the gamePanel
+        double panelW = gamePanel.getWidth();
+        double panelH = gamePanel.getHeight();
+        double x = gamePanel.getLayoutX() + (panelW - notificationPanel.getMinWidth()) / 2.0;
+        double y = gamePanel.getLayoutY() + (panelH - notificationPanel.getMinHeight()) / 2.0;
+        notificationPanel.setLayoutX(x);
+        notificationPanel.setLayoutY(y);
+        return notificationPanel;
     }
 
     // method for moving hard down, using key SPACE
@@ -396,18 +406,19 @@ public class GuiController implements Initializable {
         popup.setFont(Font.font("Verdana", 22));
         popup.setFill(Color.WHITESMOKE);
 
+        Pane rootPane = (Pane) gamePanel.getParent();
+
         // Position slightly below the score label
-        double startX = scoreLabel.getLayoutX() + 10;
-        double startY = scoreLabel.getLayoutY() + 30;
+        double startX = 300 + 23;
+        double startY = 32 + 20 + 8 + 30 + 5;
         popup.setLayoutX(startX);
         popup.setLayoutY(startY);
 
-        Pane parent = (Pane) scoreLabel.getParent();
-        parent.getChildren().add(popup);
+        rootPane.getChildren().add(popup);
 
         // Move upward slightly
         TranslateTransition moveUp = new TranslateTransition(Duration.millis(1000), popup);
-        moveUp.setByY(-20); // move up 20px
+        moveUp.setByY(-20); // move up 20 px
 
         // Fade out
         FadeTransition fadeOut = new FadeTransition(Duration.millis(1000), popup);
@@ -419,7 +430,7 @@ public class GuiController implements Initializable {
         fadeOut.play();
 
         // Remove after fade
-        fadeOut.setOnFinished(e -> parent.getChildren().remove(popup));
+        fadeOut.setOnFinished(e -> rootPane.getChildren().remove(popup));
     }
 
     public void bindScore(IntegerProperty integerProperty) {
