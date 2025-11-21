@@ -18,6 +18,7 @@ public class MenuController {
     @FXML
     private Button exitButton;
 
+
     @FXML
     private void initialize() {
         playButton.setOnAction(e -> startGame());
