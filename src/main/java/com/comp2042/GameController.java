@@ -2,7 +2,7 @@ package com.comp2042;
 
 public class GameController implements InputEventListener {
 
-    private boolean paused = false; // to show paused state of the game
+    private boolean paused = false;
     private boolean gameOver = false;
     private Board board = new SimpleBoard(25, 10);
 
@@ -16,31 +16,44 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
-    // Logic for passing pause
     public void togglePause() {
         paused = !paused;
     }
-    /**
-     * @return paused returns paused if the game is paused
-     */
+
     public boolean isPaused() {
         return paused;
     }
 
-
     @Override
     public DownData onDownEvent(MoveEvent event) {
+        // REMOVED: if (paused) return null;
+        // Let GuiController handle pause checks instead
+
+        // ADD DEBUG HERE
+        System.out.println("=== onDownEvent CALLED ===");
 
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
+
         if (!canMove) {
+            System.out.println("Piece locked! Checking for line clears...");
+
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
-            if (clearRow.getLinesRemoved() > 0) {
+
+            System.out.println("clearRow is null: " + (clearRow == null));
+            if (clearRow != null) {
+                System.out.println("Lines removed: " + clearRow.getLinesRemoved());
+                System.out.println("Score bonus: " + clearRow.getScoreBonus());
+            }
+
+            if (clearRow != null && clearRow.getLinesRemoved() > 0) {
                 int bonus = clearRow.getScoreBonus();
+                System.out.println("Adding bonus to score: " + bonus);
                 board.getScore().add(bonus);
                 viewGuiController.showScoreBonus(bonus);
             }
+
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
@@ -52,39 +65,10 @@ public class GameController implements InputEventListener {
                 board.getScore().add(1);
             }
         }
+
+        System.out.println("=== onDownEvent FINISHED ===");
         return new DownData(clearRow, board.getViewData());
     }
-
-    //method that resets a game, with score beginning from 0
-    public void restartGame() {
-        paused = false;
-        gameOver = false;
-        board.newGame();  // resets the board
-        viewGuiController.refreshGameBackground(board.getBoardMatrix());
-        board.getScore().reset();
-    }
-
-    @Override
-    public ViewData onLeftEvent(MoveEvent event){
-
-        board.moveBrickLeft();
-        return board.getViewData();
-    }
-
-    @Override
-    public ViewData onRightEvent(MoveEvent event) {
-
-        board.moveBrickRight();
-        return board.getViewData();
-    }
-
-    @Override
-    public ViewData onRotateEvent(MoveEvent event) {
-
-        board.rotateLeftBrick();
-        return board.getViewData();
-    }
-
 
     @Override
     public void createNewGame() {
@@ -92,13 +76,10 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
 
-    // because board is a private variable, adding a getter for boardMatrix without breaking encapsulation
     public int[][] getBoardMatrix() {
         return board.getBoardMatrix();
     }
 
-
-    // new override on implementing hard drop
     @Override
     public DownData onHardDropEvent(MoveEvent event) {
         int dropDistance = 0;
@@ -106,19 +87,20 @@ public class GameController implements InputEventListener {
             dropDistance++;
         }
 
-        // merge the piece and clear row
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
-        if (clearRow.getLinesRemoved() > 0) {
-            board.getScore().add(clearRow.getScoreBonus());
+
+        int totalBonus = dropDistance * 2; // Start with hard drop bonus
+
+        if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+            int lineBonus = clearRow.getScoreBonus();
+            board.getScore().add(lineBonus);
+            totalBonus += lineBonus; // ADD line clear bonus to total
         }
 
-        // bonus points for hard drop distance
-        int bonus = dropDistance * 2;
-        board.getScore().add(bonus);
-        viewGuiController.showScoreBonus(bonus);
+        board.getScore().add(dropDistance * 2);
+        viewGuiController.showScoreBonus(totalBonus); // Show combined bonus
 
-        // spawn next brick
         if (board.createNewBrick()) {
             viewGuiController.gameOver();
         }
@@ -126,6 +108,31 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
         return new DownData(clearRow, board.getViewData());
+    }
 
+    @Override
+    public ViewData onLeftEvent(MoveEvent event) {
+        board.moveBrickLeft();
+        return board.getViewData();
+    }
+
+    @Override
+    public ViewData onRightEvent(MoveEvent event) {
+        board.moveBrickRight();
+        return board.getViewData();
+    }
+
+    @Override
+    public ViewData onRotateEvent(MoveEvent event) {
+        board.rotateLeftBrick();
+        return board.getViewData();
+    }
+
+    public void restartGame() {
+        paused = false;
+        gameOver = false;
+        board.newGame();
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        board.getScore().reset();
     }
 }
