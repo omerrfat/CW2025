@@ -7,26 +7,26 @@
 <?import java.net.URL?>
 
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml"
-      prefWidth="420" prefHeight="510">
+    xmlns:fx="http://javafx.com/fxml"
+    prefWidth="420" prefHeight="510">
 
     <!-- CURRENT BRICK PANEL (for active piece) -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"
-              layoutX="10" layoutY="0"/>
+        layoutX="10" layoutY="0" />
 
     <!-- GAME BOARD -->
     <BorderPane styleClass="gameBoard" fx:id="gameBoard"
-                layoutX="10" layoutY="10">
+        layoutX="10" layoutY="10">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1"
-                      layoutX="40" layoutY="30"/>
+                layoutX="40" layoutY="30" />
         </center>
     </BorderPane>
 
     <!-- NOTIFICATIONS -->
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+            <GameOverPanel fx:id="gameOverPanel" />
         </VBox>
     </Group>
 
@@ -34,23 +34,23 @@
     <VBox layoutX="300" layoutY="32" spacing="20">
         <!-- SCORE SECTION -->
         <VBox spacing="8">
-            <Label text="Score" styleClass="nextBrickLabel"/>
-            <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
-            <Group fx:id="scorePopupGroup"/>
+            <Label text="Score" styleClass="nextBrickLabel" />
+            <Label fx:id="scoreLabel" text="0" styleClass="scoreClass" />
+            <Group fx:id="scorePopupGroup" />
         </VBox>
 
         <!-- NEXT PIECE PREVIEW SECTION -->
         <VBox spacing="8" alignment="CENTER">
-            <Label text="Next" styleClass="nextBrickLabel"/>
-            <Pane styleClass="previewBox" prefWidth="100" prefHeight="100">
+            <Label text="Next" styleClass="nextBrickLabel" />
+            <Pane styleClass="previewBox" prefWidth="100" prefHeight="330">
                 <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1"
-                          layoutX="20" layoutY="20"/>
+                    layoutX="10" layoutY="10" />
             </Pane>
         </VBox>
     </VBox>
 
     <stylesheets>
-        <URL value="@window_style.css"/>
+        <URL value="@window_style.css" />
     </stylesheets>
 
 </Pane>

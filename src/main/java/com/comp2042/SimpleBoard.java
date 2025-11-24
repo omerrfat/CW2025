@@ -15,7 +15,7 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
     private Brick currentBrick;
-    private Brick nextBrick;  // stores the next piece
+    private Brick nextBrick; // stores the next piece
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -24,7 +24,7 @@ public class SimpleBoard implements Board {
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
-        nextBrick = brickGenerator.getBrick();  // generate first next brick
+        nextBrick = brickGenerator.getBrick(); // generate first next brick
     }
 
     private boolean canMove(int[][] shape, int newRow, int newCol) {
@@ -36,7 +36,8 @@ public class SimpleBoard implements Board {
      * calculate where the current piece would land if dropped instantly.
      */
     public int[][] getGhostBrickCoordinates() {
-        if (currentBrick == null || currentOffset == null) return new int[0][0];
+        if (currentBrick == null || currentOffset == null)
+            return new int[0][0];
 
         int[][] shape = brickRotator.getCurrentShape();
         int ghostRow = (int) currentOffset.getY();
@@ -61,7 +62,8 @@ public class SimpleBoard implements Board {
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, shape,
                 (int) newOffset.getX(), (int) newOffset.getY());
 
-        if (conflict) return false;
+        if (conflict)
+            return false;
 
         currentOffset = newOffset;
         return true;
@@ -76,7 +78,8 @@ public class SimpleBoard implements Board {
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, shape,
                 (int) newOffset.getX(), (int) newOffset.getY());
 
-        if (conflict) return false;
+        if (conflict)
+            return false;
 
         currentOffset = newOffset;
         return true;
@@ -91,7 +94,8 @@ public class SimpleBoard implements Board {
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, shape,
                 (int) newOffset.getX(), (int) newOffset.getY());
 
-        if (conflict) return false;
+        if (conflict)
+            return false;
 
         currentOffset = newOffset;
         return true;
@@ -103,7 +107,8 @@ public class SimpleBoard implements Board {
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, nextShape.getShape(),
                 (int) currentOffset.getX(), (int) currentOffset.getY());
 
-        if (conflict) return false;
+        if (conflict)
+            return false;
 
         brickRotator.setCurrentShape(nextShape.getPosition());
         return true;
@@ -113,7 +118,7 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         // UPDATED: Use the stored nextBrick instead of generating new one
         currentBrick = nextBrick;
-        nextBrick = brickGenerator.getBrick();  // Generate the new next brick
+        nextBrick = brickGenerator.getBrick(); // Generate the new next brick
 
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(4, 0); // typically start near top
@@ -134,19 +139,43 @@ public class SimpleBoard implements Board {
         // Get the next brick shape directly from the nextBrick object
         int[][] nextBrickShape = null;
         if (nextBrick != null && nextBrick.getShapeMatrix() != null && !nextBrick.getShapeMatrix().isEmpty()) {
-            nextBrickShape = nextBrick.getShapeMatrix().get(0);  // Get first rotation state
+            nextBrickShape = nextBrick.getShapeMatrix().get(0); // Get first rotation state
         }
+
+        // Get the next 3 bricks for the preview panel
+        NextThreeBricksInfo nextThreeBricksInfo = getNextThreeBricksInfo();
 
         ViewData viewData = new ViewData(
                 shape,
                 (int) currentOffset.getX(),
                 (int) currentOffset.getY(),
-                nextBrickShape
-        );
+                nextBrickShape,
+                nextThreeBricksInfo);
 
         // Add ghost info
         viewData.setGhostCoords(getGhostBrickCoordinates());
         return viewData;
+    }
+
+    /**
+     * Get the next 3 bricks information for the preview panel
+     */
+    private NextThreeBricksInfo getNextThreeBricksInfo() {
+        Brick[] nextThree = brickGenerator.getNextThreeBricks();
+
+        int[][] brick1 = nextThree[0] != null && !nextThree[0].getShapeMatrix().isEmpty()
+                ? nextThree[0].getShapeMatrix().get(0)
+                : new int[4][4];
+
+        int[][] brick2 = nextThree[1] != null && !nextThree[1].getShapeMatrix().isEmpty()
+                ? nextThree[1].getShapeMatrix().get(0)
+                : new int[4][4];
+
+        int[][] brick3 = nextThree[2] != null && !nextThree[2].getShapeMatrix().isEmpty()
+                ? nextThree[2].getShapeMatrix().get(0)
+                : new int[4][4];
+
+        return new NextThreeBricksInfo(brick1, brick2, brick3);
     }
 
     @Override
@@ -171,7 +200,7 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
-        nextBrick = brickGenerator.getBrick();  // Generate new next brick for new game
+        nextBrick = brickGenerator.getBrick(); // Generate new next brick for new game
         createNewBrick();
     }
 }
