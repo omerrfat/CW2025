@@ -35,16 +35,22 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     // ========== FXML COMPONENTS ==========
-    @FXML private GridPane gamePanel;
-    @FXML private Group groupNotification;
-    @FXML private GridPane brickPanel;
-    @FXML private GridPane nextBrickPanel;
-    @FXML private GameOverPanel gameOverPanel;
-    @FXML private Label scoreLabel;
+    @FXML
+    private GridPane gamePanel;
+    @FXML
+    private Group groupNotification;
+    @FXML
+    private GridPane brickPanel;
+    @FXML
+    private GridPane nextBrickPanel;
+    @FXML
+    private GameOverPanel gameOverPanel;
+    @FXML
+    private Label scoreLabel;
 
     // ========== DISPLAY MATRICES ==========
-    private Rectangle[][] displayMatrix;      // Game board background
-    private Rectangle[][] rectangles;         // Current falling piece
+    private Rectangle[][] displayMatrix; // Game board background
+    private Rectangle[][] rectangles; // Current falling piece
     private Rectangle[][] nextBrickRectangles; // Next piece preview
 
     // ========== GAME STATE ==========
@@ -117,8 +123,7 @@ public class GuiController implements Initializable {
     private void startGameLoop() {
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(Constants.INITIAL_FALL_SPEED_MS),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-        ));
+                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
     }
@@ -184,6 +189,7 @@ public class GuiController implements Initializable {
         updateCurrentBrick(brick);
         updateGhostPiece(brick);
         updateNextBrickPreview(brick);
+        updateNextThreeBricksPreview(brick);
 
         if (!isGameOver.getValue()) {
             groupNotification.toFront();
@@ -249,11 +255,9 @@ public class GuiController implements Initializable {
     }
 
     private void clearGhostPiece() {
-        gamePanel.getChildren().removeIf(node ->
-                node instanceof Rectangle &&
-                        node.getUserData() != null &&
-                        node.getUserData().equals("ghost")
-        );
+        gamePanel.getChildren().removeIf(node -> node instanceof Rectangle &&
+                node.getUserData() != null &&
+                node.getUserData().equals("ghost"));
     }
 
     private void drawGhostPiece(int[][] ghostCoords) {
@@ -355,9 +359,58 @@ public class GuiController implements Initializable {
         return new CenteringOffset(offsetRow, offsetCol);
     }
 
+    // =============================================================================
+    // RENDERING - NEXT THREE BRICKS PREVIEW (vertical display)
+    // =============================================================================
+
+    private void updateNextThreeBricksPreview(ViewData brick) {
+        if (brick == null || brick.getNextThreeBricksInfo() == null) {
+            return;
+        }
+
+        NextThreeBricksInfo nextThreeBricksInfo = brick.getNextThreeBricksInfo();
+
+        // Clear existing next three bricks display
+        nextBrickPanel.getChildren().clear();
+
+        int currentRow = 0;
+        final int SPACING = 1; // spacing between bricks vertically
+
+        // Display next 3 bricks vertically
+        for (int brickIndex = 0; brickIndex < 3; brickIndex++) {
+            int[][] brickData = nextThreeBricksInfo.getBrickShape(brickIndex);
+
+            if (brickData == null || brickData.length == 0) {
+                continue;
+            }
+
+            // Create a label for brick number (optional)
+            Label brickLabel = new Label("Next " + (brickIndex + 1));
+            brickLabel.setStyle("-fx-text-fill: white; -fx-font-size: 10;");
+            nextBrickPanel.add(brickLabel, 0, currentRow);
+            currentRow++;
+
+            // Add the brick visualization
+            CenteringOffset offset = calculateCenteringOffset(brickData);
+
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
+                    rectangle.setFill(getFillColor(brickData[i][j]));
+                    rectangle.setArcHeight(Constants.BRICK_ARC_SIZE);
+                    rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
+                    nextBrickPanel.add(rectangle, j + offset.col, currentRow + i + offset.row);
+                }
+            }
+
+            currentRow += brickData.length + SPACING;
+        }
+    }
+
     private static class CenteringOffset {
         final int row;
         final int col;
+
         CenteringOffset(int row, int col) {
             this.row = row;
             this.col = col;
