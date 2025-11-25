@@ -374,7 +374,7 @@ public class GuiController implements Initializable {
         nextBrickPanel.getChildren().clear();
 
         int currentRow = 0;
-        final int SPACING = 1; // spacing between bricks vertically
+        final int SPACING = 0; // minimal spacing between bricks vertically
 
         // Display next 3 bricks vertically
         for (int brickIndex = 0; brickIndex < 3; brickIndex++) {
@@ -383,12 +383,6 @@ public class GuiController implements Initializable {
             if (brickData == null || brickData.length == 0) {
                 continue;
             }
-
-            // Create a label for brick number (optional)
-            Label brickLabel = new Label("Next " + (brickIndex + 1));
-            brickLabel.setStyle("-fx-text-fill: white; -fx-font-size: 10;");
-            nextBrickPanel.add(brickLabel, 0, currentRow);
-            currentRow++;
 
             // Add the brick visualization
             CenteringOffset offset = calculateCenteringOffset(brickData);
@@ -399,7 +393,7 @@ public class GuiController implements Initializable {
                     rectangle.setFill(getFillColor(brickData[i][j]));
                     rectangle.setArcHeight(Constants.BRICK_ARC_SIZE);
                     rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
-                    nextBrickPanel.add(rectangle, j + offset.col, currentRow + i + offset.row);
+                    nextBrickPanel.add(rectangle, j + offset.col, currentRow + i);
                 }
             }
 

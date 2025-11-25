@@ -21,13 +21,18 @@ public class RandomBrickGenerator implements BrickGenerator {
         brickList.add(new SBrick());
         brickList.add(new TBrick());
         brickList.add(new ZBrick());
+
+        // Initialize queue with 4 bricks (1 current + 3 preview)
+        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
     }
 
     @Override
     public Brick getBrick() {
-        if (nextBricks.size() <= 1) {
+        // Keep queue stocked with at least 4 bricks (1 current + 3 preview)
+        while (nextBricks.size() < 4) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
         return nextBricks.poll();
@@ -39,22 +44,22 @@ public class RandomBrickGenerator implements BrickGenerator {
     }
 
     /**
-     * Get the next 3 bricks that will fall
+     * Get the next 3 bricks that will fall (peek without removing)
      * 
      * @return array of 3 Bricks [next, next+1, next+2]
      */
     public Brick[] getNextThreeBricks() {
+        // Ensure we have at least 4 bricks in queue
+        while (nextBricks.size() < 4) {
+            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        }
+
         Brick[] result = new Brick[3];
         Brick[] temp = nextBricks.toArray(new Brick[0]);
 
         for (int i = 0; i < 3; i++) {
             if (i < temp.length) {
                 result[i] = temp[i];
-            } else {
-                // Generate more bricks if needed
-                Brick newBrick = brickList.get(ThreadLocalRandom.current().nextInt(brickList.size()));
-                nextBricks.add(newBrick);
-                result[i] = newBrick;
             }
         }
 

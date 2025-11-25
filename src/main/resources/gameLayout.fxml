@@ -42,7 +42,7 @@
         <!-- NEXT PIECE PREVIEW SECTION -->
         <VBox spacing="8" alignment="CENTER">
             <Label text="Next" styleClass="nextBrickLabel" />
-            <Pane styleClass="previewBox" prefWidth="100" prefHeight="330">
+            <Pane styleClass="previewBox" prefWidth="100" prefHeight="260">
                 <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1"
                     layoutX="10" layoutY="10" />
             </Pane>

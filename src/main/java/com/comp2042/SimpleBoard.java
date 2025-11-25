@@ -9,7 +9,7 @@ public class SimpleBoard implements Board {
 
     private final int width;
     private final int height;
-    private final BrickGenerator brickGenerator;
+    private BrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
     private int[][] currentGameMatrix;
     private Point currentOffset;
@@ -24,7 +24,9 @@ public class SimpleBoard implements Board {
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
-        nextBrick = brickGenerator.getBrick(); // generate first next brick
+        // Initialize: set the first "next" brick (current will be created
+        // later when the game starts via createNewBrick())
+        nextBrick = brickGenerator.getBrick(); // consume first into preview
     }
 
     private boolean canMove(int[][] shape, int newRow, int newCol) {
@@ -116,10 +118,13 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        // UPDATED: Use the stored nextBrick instead of generating new one
+        // Move the previewed next brick into the current piece and then
+        // poll the generator for the next preview piece. This preserves
+        // the expected createNewBrick() workflow used by GameController.
         currentBrick = nextBrick;
-        nextBrick = brickGenerator.getBrick(); // Generate the new next brick
+        nextBrick = brickGenerator.getBrick(); // poll next piece into preview
 
+        // apply the consumed brick as the current falling piece
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(4, 0); // typically start near top
 
@@ -161,18 +166,24 @@ public class SimpleBoard implements Board {
      * Get the next 3 bricks information for the preview panel
      */
     private NextThreeBricksInfo getNextThreeBricksInfo() {
+        // Build preview list where first preview item is the stored nextBrick,
+        // followed by the first two bricks from the generator's upcoming queue.
         Brick[] nextThree = brickGenerator.getNextThreeBricks();
 
-        int[][] brick1 = nextThree[0] != null && !nextThree[0].getShapeMatrix().isEmpty()
-                ? nextThree[0].getShapeMatrix().get(0)
+        Brick b1 = nextBrick != null ? nextBrick : (nextThree.length > 0 ? nextThree[0] : null);
+        Brick b2 = (nextThree.length > 0) ? nextThree[0] : null;
+        Brick b3 = (nextThree.length > 1) ? nextThree[1] : null;
+
+        int[][] brick1 = (b1 != null && b1.getShapeMatrix() != null && !b1.getShapeMatrix().isEmpty())
+                ? b1.getShapeMatrix().get(0)
                 : new int[4][4];
 
-        int[][] brick2 = nextThree[1] != null && !nextThree[1].getShapeMatrix().isEmpty()
-                ? nextThree[1].getShapeMatrix().get(0)
+        int[][] brick2 = (b2 != null && b2.getShapeMatrix() != null && !b2.getShapeMatrix().isEmpty())
+                ? b2.getShapeMatrix().get(0)
                 : new int[4][4];
 
-        int[][] brick3 = nextThree[2] != null && !nextThree[2].getShapeMatrix().isEmpty()
-                ? nextThree[2].getShapeMatrix().get(0)
+        int[][] brick3 = (b3 != null && b3.getShapeMatrix() != null && !b3.getShapeMatrix().isEmpty())
+                ? b3.getShapeMatrix().get(0)
                 : new int[4][4];
 
         return new NextThreeBricksInfo(brick1, brick2, brick3);
@@ -200,7 +211,10 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
-        nextBrick = brickGenerator.getBrick(); // Generate new next brick for new game
+        // Reset the brick generator for a fresh queue
+        brickGenerator = new RandomBrickGenerator();
+        // Set first preview brick and create the initial current piece
+        nextBrick = brickGenerator.getBrick();
         createNewBrick();
     }
 }
