@@ -31,7 +31,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getBrick() {
-        // Keep queue stocked with at least 4 bricks (1 current + 3 preview)
+        // keep queue stocked with at least 4 bricks (1 current + 3 preview)
         while (nextBricks.size() < 4) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
@@ -49,20 +49,30 @@ public class RandomBrickGenerator implements BrickGenerator {
      * @return array of 3 Bricks [next, next+1, next+2]
      */
     public Brick[] getNextThreeBricks() {
-        // Ensure we have at least 4 bricks in queue
-        while (nextBricks.size() < 4) {
+        return peekNext(3);
+    }
+
+    @Override
+    public Brick[] peekNext(int count) {
+        // Make sure the internal queue has at least `count` items
+        while (nextBricks.size() < count) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
 
-        Brick[] result = new Brick[3];
         Brick[] temp = nextBricks.toArray(new Brick[0]);
+        Brick[] result = new Brick[count];
 
-        for (int i = 0; i < 3; i++) {
-            if (i < temp.length) {
+        for (int i = 0; i < count; i++) {
+            if (i < temp.length && temp[i] != null) {
                 result[i] = temp[i];
+            } else {
+                Brick b = brickList.get(ThreadLocalRandom.current().nextInt(brickList.size()));
+                nextBricks.add(b);
+                result[i] = b;
             }
         }
 
         return result;
     }
+
 }

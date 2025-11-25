@@ -42,7 +42,11 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane brickPanel;
     @FXML
-    private GridPane nextBrickPanel;
+    private GridPane nextPreview0;
+    @FXML
+    private GridPane nextPreview1;
+    @FXML
+    private GridPane nextPreview2;
     @FXML
     private GameOverPanel gameOverPanel;
     @FXML
@@ -226,11 +230,11 @@ public class GuiController implements Initializable {
     }
 
     private void updateBrickPosition(ViewData brick) {
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() +
-                brick.getxPosition() * Constants.BRICK_SIZE);
+
+        brickPanel.setLayoutX(gamePanel.getLayoutX() + Constants.BRICK_PANEL_X_OFFSET +
+                brick.getxPosition() * (Constants.BRICK_SIZE + (int) gamePanel.getHgap()));
         brickPanel.setLayoutY(Constants.BRICK_PANEL_Y_OFFSET + gamePanel.getLayoutY() +
-                brick.getyPosition() * brickPanel.getHgap() +
-                brick.getyPosition() * Constants.BRICK_SIZE);
+                brick.getyPosition() * (Constants.BRICK_SIZE + (int) gamePanel.getVgap()));
     }
 
     private void updateBrickColors(int[][] brickData) {
@@ -287,11 +291,11 @@ public class GuiController implements Initializable {
     // =============================================================================
 
     private void initializeNextBrickPreview(ViewData brick) {
-        if (nextBrickPanel == null || brick == null || brick.getNextBrickData() == null) {
+        if (nextPreview0 == null || brick == null || brick.getNextBrickData() == null) {
             return;
         }
-
-        nextBrickPanel.getChildren().clear();
+        GridPane target = nextPreview0;
+        target.getChildren().clear();
         int[][] nextBrickData = brick.getNextBrickData();
         nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
 
@@ -304,16 +308,17 @@ public class GuiController implements Initializable {
                 rectangle.setArcHeight(Constants.BRICK_ARC_SIZE);
                 rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
                 nextBrickRectangles[i][j] = rectangle;
-                nextBrickPanel.add(rectangle, j + offset.col, i + offset.row);
+                target.add(rectangle, j + offset.col, i + offset.row);
             }
         }
     }
 
     private void updateNextBrickPreview(ViewData brick) {
-        if (nextBrickPanel == null || brick == null || brick.getNextBrickData() == null) {
+        if (nextPreview0 == null || brick == null || brick.getNextBrickData() == null) {
             return;
         }
 
+        GridPane target = nextPreview0;
         int[][] nextBrickData = brick.getNextBrickData();
 
         // Reinitialize if dimensions changed
@@ -360,7 +365,7 @@ public class GuiController implements Initializable {
     }
 
     // =============================================================================
-    // RENDERING - NEXT THREE BRICKS PREVIEW (vertical display)
+    // RENDERING - NEXT THREE BRICKS PREVIEW
     // =============================================================================
 
     private void updateNextThreeBricksPreview(ViewData brick) {
@@ -370,34 +375,32 @@ public class GuiController implements Initializable {
 
         NextThreeBricksInfo nextThreeBricksInfo = brick.getNextThreeBricksInfo();
 
-        // Clear existing next three bricks display
-        nextBrickPanel.getChildren().clear();
+        // display next 3 bricks vertically
+        GridPane[] targets = new GridPane[] { nextPreview0, nextPreview1, nextPreview2 };
 
-        int currentRow = 0;
-        final int SPACING = 0; // minimal spacing between bricks vertically
-
-        // Display next 3 bricks vertically
-        for (int brickIndex = 0; brickIndex < 3; brickIndex++) {
-            int[][] brickData = nextThreeBricksInfo.getBrickShape(brickIndex);
-
-            if (brickData == null || brickData.length == 0) {
+        for (int idx = 0; idx < targets.length; idx++) {
+            GridPane target = targets[idx];
+            if (target == null)
                 continue;
-            }
+            target.getChildren().clear();
 
-            // Add the brick visualization
+            int[][] brickData = nextThreeBricksInfo.getBrickShape(idx);
+            if (brickData == null || brickData.length == 0)
+                continue;
+
             CenteringOffset offset = calculateCenteringOffset(brickData);
 
             for (int i = 0; i < brickData.length; i++) {
                 for (int j = 0; j < brickData[i].length; j++) {
+                    if (brickData[i][j] == 0)
+                        continue;
                     Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                     rectangle.setFill(getFillColor(brickData[i][j]));
                     rectangle.setArcHeight(Constants.BRICK_ARC_SIZE);
                     rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
-                    nextBrickPanel.add(rectangle, j + offset.col, currentRow + i);
+                    target.add(rectangle, j + Math.max(0, offset.col), i + Math.max(0, offset.row));
                 }
             }
-
-            currentRow += brickData.length + SPACING;
         }
     }
 

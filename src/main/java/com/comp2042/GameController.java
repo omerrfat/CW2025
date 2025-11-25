@@ -3,7 +3,7 @@ package com.comp2042;
 public class GameController implements InputEventListener {
 
     private boolean paused = false;
-    private boolean gameOver = false;
+    // `isGameOver` state is handled by GuiController; remove unused field
     private Board board = new SimpleBoard(25, 10);
 
     private GuiController viewGuiController;
@@ -29,27 +29,16 @@ public class GameController implements InputEventListener {
         // REMOVED: if (paused) return null;
         // Let GuiController handle pause checks instead
 
-        // ADD DEBUG HERE
-        System.out.println("=== onDownEvent CALLED ===");
-
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
 
         if (!canMove) {
-            System.out.println("Piece locked! Checking for line clears...");
 
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
 
-            System.out.println("clearRow is null: " + (clearRow == null));
-            if (clearRow != null) {
-                System.out.println("Lines removed: " + clearRow.getLinesRemoved());
-                System.out.println("Score bonus: " + clearRow.getScoreBonus());
-            }
-
             if (clearRow != null && clearRow.getLinesRemoved() > 0) {
                 int bonus = clearRow.getScoreBonus();
-                System.out.println("Adding bonus to score: " + bonus);
                 board.getScore().add(bonus);
                 viewGuiController.showScoreBonus(bonus);
             }
@@ -66,7 +55,7 @@ public class GameController implements InputEventListener {
             }
         }
 
-        System.out.println("=== onDownEvent FINISHED ===");
+        // debug prints removed
         return new DownData(clearRow, board.getViewData());
     }
 
@@ -90,12 +79,12 @@ public class GameController implements InputEventListener {
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
 
-        int totalBonus = dropDistance * 2; // Start with hard drop bonus
+        int totalBonus = dropDistance * 2; // start with hard drop bonus
 
         if (clearRow != null && clearRow.getLinesRemoved() > 0) {
             int lineBonus = clearRow.getScoreBonus();
             board.getScore().add(lineBonus);
-            totalBonus += lineBonus; // ADD line clear bonus to total
+            totalBonus += lineBonus; // add line clear bonus to total
         }
 
         board.getScore().add(dropDistance * 2);
@@ -130,7 +119,6 @@ public class GameController implements InputEventListener {
 
     public void restartGame() {
         paused = false;
-        gameOver = false;
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         board.getScore().reset();

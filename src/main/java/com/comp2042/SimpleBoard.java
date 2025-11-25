@@ -168,11 +168,11 @@ public class SimpleBoard implements Board {
     private NextThreeBricksInfo getNextThreeBricksInfo() {
         // Build preview list where first preview item is the stored nextBrick,
         // followed by the first two bricks from the generator's upcoming queue.
-        Brick[] nextThree = brickGenerator.getNextThreeBricks();
+        Brick[] peekTwo = brickGenerator.peekNext(2);
 
-        Brick b1 = nextBrick != null ? nextBrick : (nextThree.length > 0 ? nextThree[0] : null);
-        Brick b2 = (nextThree.length > 0) ? nextThree[0] : null;
-        Brick b3 = (nextThree.length > 1) ? nextThree[1] : null;
+        Brick b1 = nextBrick != null ? nextBrick : (peekTwo.length > 0 ? peekTwo[0] : null);
+        Brick b2 = (peekTwo.length > 0) ? peekTwo[0] : null;
+        Brick b3 = (peekTwo.length > 1) ? peekTwo[1] : null;
 
         int[][] brick1 = (b1 != null && b1.getShapeMatrix() != null && !b1.getShapeMatrix().isEmpty())
                 ? b1.getShapeMatrix().get(0)
