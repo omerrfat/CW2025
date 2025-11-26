@@ -4,12 +4,14 @@ public final class ClearRow {
 
     private final int linesRemoved;
     private final int[][] newMatrix;
+    private final int[] clearedRows;
     private final int scoreBonus;
 
-    public ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus) {
+    public ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus, int[] clearedRows) {
         this.linesRemoved = linesRemoved;
         this.newMatrix = newMatrix;
         this.scoreBonus = scoreBonus;
+        this.clearedRows = clearedRows == null ? new int[0] : java.util.Arrays.copyOf(clearedRows, clearedRows.length);
     }
 
     public int getLinesRemoved() {
@@ -22,5 +24,9 @@ public final class ClearRow {
 
     public int getScoreBonus() {
         return scoreBonus;
+    }
+
+    public int[] getClearedRows() {
+        return java.util.Arrays.copyOf(clearedRows, clearedRows.length);
     }
 }

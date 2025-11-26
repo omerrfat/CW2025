@@ -2,6 +2,9 @@ package com.comp2042;
 
 import com.comp2042.util.Constants;
 import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.Animation;
+import javafx.application.Platform;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
@@ -464,6 +467,64 @@ public class GuiController implements Initializable {
         if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
             showLineClearNotification(downData.getClearRow().getScoreBonus());
         }
+    }
+
+    /**
+     * flash the cleared rows (based on beforeMatrix which represents the board
+     * AFTER merge but BEFORE clears).
+     * after animation completes it will invoke the provided onFinished callback
+     */
+    public void animateLineClear(ClearRow clearRow, int[][] beforeMatrix, Runnable onFinished) {
+        if (clearRow == null || clearRow.getLinesRemoved() == 0 || beforeMatrix == null) {
+            if (onFinished != null)
+                Platform.runLater(onFinished);
+            return;
+        }
+
+        int[] cleared = clearRow.getClearedRows();
+        java.util.List<Animation> transitions = new java.util.ArrayList<>();
+
+        for (int r : cleared) {
+            // only rows >= 2 have display rectangles (board rendering starts at index 2)
+            if (r < 2 || r >= displayMatrix.length)
+                continue;
+            for (int c = 0; c < displayMatrix[r].length; c++) {
+                Rectangle rect = displayMatrix[r][c];
+                if (rect == null)
+                    continue;
+
+                FadeTransition fade = new FadeTransition(Duration.millis(120), rect);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.12);
+                fade.setAutoReverse(true);
+                fade.setCycleCount(4);
+                transitions.add(fade);
+            }
+        }
+
+        if (transitions.isEmpty()) {
+            if (onFinished != null)
+                Platform.runLater(onFinished);
+            return;
+        }
+
+        ParallelTransition pt = new ParallelTransition();
+        pt.getChildren().addAll(transitions);
+        pt.setOnFinished(e -> {
+            // ensuring every affected rect is fully opaque again
+            for (int r : cleared) {
+                if (r < 2 || r >= displayMatrix.length)
+                    continue;
+                for (int c = 0; c < displayMatrix[r].length; c++) {
+                    Rectangle rect = displayMatrix[r][c];
+                    if (rect != null)
+                        rect.setOpacity(1.0);
+                }
+            }
+            if (onFinished != null)
+                onFinished.run();
+        });
+        pt.play();
     }
 
     private void showLineClearNotification(int score) {

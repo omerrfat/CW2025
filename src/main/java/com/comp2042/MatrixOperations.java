@@ -8,9 +8,8 @@ import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
-
-    //We don't want to instantiate this utility class
-    private MatrixOperations(){
+    // we don't want to instantiate this utility class
+    private MatrixOperations() {
 
     }
 
@@ -89,10 +88,11 @@ public class MatrixOperations {
             }
         }
         int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
-        return new ClearRow(clearedRows.size(), tmp, scoreBonus);
+        int[] clearedArray = clearedRows.stream().mapToInt(Integer::intValue).toArray();
+        return new ClearRow(clearedRows.size(), tmp, scoreBonus, clearedArray);
     }
 
-    public static List<int[][]> deepCopyList(List<int[][]> list){
+    public static List<int[][]> deepCopyList(List<int[][]> list) {
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
 
@@ -101,7 +101,7 @@ public class MatrixOperations {
         for (int r = 0; r < shape.length; r++) {
             for (int c = 0; c < shape[r].length; c++) {
                 if (shape[r][c] != 0) {
-                    coords.add(new int[]{rowOffset + r, colOffset + c});
+                    coords.add(new int[] { rowOffset + r, colOffset + c });
                 }
             }
         }

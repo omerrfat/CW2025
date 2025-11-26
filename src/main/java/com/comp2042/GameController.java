@@ -35,6 +35,9 @@ public class GameController implements InputEventListener {
         if (!canMove) {
 
             board.mergeBrickToBackground();
+            // snapshot the board AFTER merge, but BEFORE removal so the animation can flash
+            // the rows
+            int[][] beforeClear = MatrixOperations.copy(board.getBoardMatrix());
             clearRow = board.clearRows();
 
             if (clearRow != null && clearRow.getLinesRemoved() > 0) {
@@ -43,11 +46,19 @@ public class GameController implements InputEventListener {
                 viewGuiController.showScoreBonus(bonus);
             }
 
-            if (board.createNewBrick()) {
+            boolean gameOver = board.createNewBrick();
+            if (gameOver) {
                 viewGuiController.gameOver();
             }
 
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            // animate the cleared rows (if any) using the before-clear snapshot and then
+            // refresh
+            if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+                viewGuiController.animateLineClear(clearRow, beforeClear,
+                        () -> viewGuiController.refreshGameBackground(board.getBoardMatrix()));
+            } else {
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            }
 
         } else {
             if (event.getEventSource() == EventSource.USER) {
@@ -77,6 +88,7 @@ public class GameController implements InputEventListener {
         }
 
         board.mergeBrickToBackground();
+        int[][] beforeClear = MatrixOperations.copy(board.getBoardMatrix());
         ClearRow clearRow = board.clearRows();
 
         int totalBonus = dropDistance * 2; // start with hard drop bonus
@@ -90,11 +102,17 @@ public class GameController implements InputEventListener {
         board.getScore().add(dropDistance * 2);
         viewGuiController.showScoreBonus(totalBonus); // Show combined bonus
 
-        if (board.createNewBrick()) {
+        boolean gameOver = board.createNewBrick();
+        if (gameOver) {
             viewGuiController.gameOver();
         }
 
-        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+            viewGuiController.animateLineClear(clearRow, beforeClear,
+                    () -> viewGuiController.refreshGameBackground(board.getBoardMatrix()));
+        } else {
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        }
 
         return new DownData(clearRow, board.getViewData());
     }
