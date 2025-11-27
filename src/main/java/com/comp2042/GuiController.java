@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 
 /**
  * Main GUI Controller for the Tetris game.
- * handles rendering, user input, and game state management.
+ * Handles rendering, user input, and game state management.
  */
 public class GuiController implements Initializable {
 
@@ -472,7 +472,7 @@ public class GuiController implements Initializable {
     /**
      * flash the cleared rows (based on beforeMatrix which represents the board
      * AFTER merge but BEFORE clears).
-     * after animation completes it will invoke the provided onFinished callback
+     * after animation completes, it will invoke the provided onFinished callback
      */
     public void animateLineClear(ClearRow clearRow, int[][] beforeMatrix, Runnable onFinished) {
         if (clearRow == null || clearRow.getLinesRemoved() == 0 || beforeMatrix == null) {
@@ -482,47 +482,103 @@ public class GuiController implements Initializable {
         }
 
         int[] cleared = clearRow.getClearedRows();
-        java.util.List<Animation> transitions = new java.util.ArrayList<>();
+
+        // Instead of animating the underlying board cells (which caused neighboring
+        // rows to appear to flash), create overlay rectangles for the cleared rows
+        // and animate those overlays only. Once overlays finish, remove them and
+        // hide the underlying rows so the collapse animation can proceed without overlap.
+        Pane rootPane = (Pane) gamePanel.getParent();
+        java.util.List<Rectangle> overlayRects = new java.util.ArrayList<>();
+        java.util.List<Animation> overlayAnims = new java.util.ArrayList<>();
+
+        double cellSize = Constants.BRICK_SIZE;
+        double hGap = gamePanel.getHgap();
+        double vGap = gamePanel.getVgap();
 
         for (int r : cleared) {
-            // only rows >= 2 have display rectangles (board rendering starts at index 2)
-            if (r < 2 || r >= displayMatrix.length)
-                continue;
-            for (int c = 0; c < displayMatrix[r].length; c++) {
-                Rectangle rect = displayMatrix[r][c];
-                if (rect == null)
-                    continue;
+            if (r < 2 || r >= beforeMatrix.length) continue;
+            for (int c = 0; c < beforeMatrix[r].length; c++) {
+                int colorCode = beforeMatrix[r][c];
+                if (colorCode == 0) continue;
 
-                FadeTransition fade = new FadeTransition(Duration.millis(120), rect);
+                Rectangle ov = new Rectangle(cellSize, cellSize);
+                ov.setFill(getFillColor(colorCode));
+                ov.setArcWidth(Constants.BRICK_ARC_SIZE);
+                ov.setArcHeight(Constants.BRICK_ARC_SIZE);
+
+                double originX = gamePanel.getLayoutX() + c * (cellSize + hGap);
+                double originY = gamePanel.getLayoutY() + (r - 2) * (cellSize + vGap);
+                ov.setLayoutX(originX);
+                ov.setLayoutY(originY);
+                ov.setMouseTransparent(true);
+
+                overlayRects.add(ov);
+                rootPane.getChildren().add(ov);
+
+                // FillPulse -> fade out sequence for cleared row cells
+                javafx.animation.FillTransition fill = new javafx.animation.FillTransition(Duration.millis(120), ov);
+                fill.setFromValue((javafx.scene.paint.Color) getFillColor(colorCode));
+                fill.setToValue(javafx.scene.paint.Color.WHITE);
+
+                FadeTransition fade = new FadeTransition(Duration.millis(160), ov);
                 fade.setFromValue(1.0);
-                fade.setToValue(0.12);
-                fade.setAutoReverse(true);
-                fade.setCycleCount(4);
-                transitions.add(fade);
+                fade.setToValue(0.0);
+
+                javafx.animation.SequentialTransition seq = new javafx.animation.SequentialTransition(fill, fade);
+                overlayAnims.add(seq);
             }
         }
 
-        if (transitions.isEmpty()) {
-            if (onFinished != null)
-                Platform.runLater(onFinished);
+        if (overlayAnims.isEmpty()) {
+            if (onFinished != null) Platform.runLater(onFinished);
             return;
         }
 
         ParallelTransition pt = new ParallelTransition();
-        pt.getChildren().addAll(transitions);
+        pt.getChildren().addAll(overlayAnims);
         pt.setOnFinished(e -> {
-            // ensuring every affected rect is fully opaque again
+            // overlays finished — remove them and hide the cleared rows underneath
+            overlayRects.forEach(rootPane.getChildren()::remove);
             for (int r : cleared) {
+                if (r < 2 || r >= displayMatrix.length) continue;
+                for (int c = 0; c < displayMatrix[r].length; c++) {
+                    Rectangle rect = displayMatrix[r][c];
+                    if (rect != null) rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                }
+            }
+
+            // compute which rows will move (any row with cleared rows below it) and hide
+            // their src cells
+            int[] sortedCleared = java.util.Arrays.copyOf(cleared, cleared.length);
+            java.util.Arrays.sort(sortedCleared);
+            for (int r = 0; r < displayMatrix.length; r++) {
+                int delta = 0;
+                for (int cr : sortedCleared)
+                    if (cr > r)
+                        delta++;
+                if (delta <= 0)
+                    continue;
                 if (r < 2 || r >= displayMatrix.length)
                     continue;
                 for (int c = 0; c < displayMatrix[r].length; c++) {
                     Rectangle rect = displayMatrix[r][c];
                     if (rect != null)
-                        rect.setOpacity(1.0);
+                        rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
-            if (onFinished != null)
-                onFinished.run();
+
+            // now all moved sources and cleared rows are hidden — play the slide-down
+            // overlays
+            if (clearRow.getLinesRemoved() > 0) {
+                RowCollapseAnimator.animateCollapse(rootPane, gamePanel, beforeMatrix, cleared, this::getFillColor,
+                        () -> {
+                            if (onFinished != null)
+                                onFinished.run();
+                        });
+            } else {
+                if (onFinished != null)
+                    onFinished.run();
+            }
         });
         pt.play();
     }
