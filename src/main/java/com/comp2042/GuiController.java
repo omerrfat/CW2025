@@ -486,7 +486,8 @@ public class GuiController implements Initializable {
         // Instead of animating the underlying board cells (which caused neighboring
         // rows to appear to flash), create overlay rectangles for the cleared rows
         // and animate those overlays only. Once overlays finish, remove them and
-        // hide the underlying rows so the collapse animation can proceed without overlap.
+        // hide the underlying rows so the collapse animation can proceed without
+        // overlap.
         Pane rootPane = (Pane) gamePanel.getParent();
         java.util.List<Rectangle> overlayRects = new java.util.ArrayList<>();
         java.util.List<Animation> overlayAnims = new java.util.ArrayList<>();
@@ -496,10 +497,12 @@ public class GuiController implements Initializable {
         double vGap = gamePanel.getVgap();
 
         for (int r : cleared) {
-            if (r < 2 || r >= beforeMatrix.length) continue;
+            if (r < 2 || r >= beforeMatrix.length)
+                continue;
             for (int c = 0; c < beforeMatrix[r].length; c++) {
                 int colorCode = beforeMatrix[r][c];
-                if (colorCode == 0) continue;
+                if (colorCode == 0)
+                    continue;
 
                 Rectangle ov = new Rectangle(cellSize, cellSize);
                 ov.setFill(getFillColor(colorCode));
@@ -530,20 +533,23 @@ public class GuiController implements Initializable {
         }
 
         if (overlayAnims.isEmpty()) {
-            if (onFinished != null) Platform.runLater(onFinished);
+            if (onFinished != null)
+                Platform.runLater(onFinished);
             return;
         }
 
         ParallelTransition pt = new ParallelTransition();
         pt.getChildren().addAll(overlayAnims);
         pt.setOnFinished(e -> {
-            // overlays finished — remove them and hide the cleared rows underneath
+            // overlays finished, remove them and hide the cleared rows underneath
             overlayRects.forEach(rootPane.getChildren()::remove);
             for (int r : cleared) {
-                if (r < 2 || r >= displayMatrix.length) continue;
+                if (r < 2 || r >= displayMatrix.length)
+                    continue;
                 for (int c = 0; c < displayMatrix[r].length; c++) {
                     Rectangle rect = displayMatrix[r][c];
-                    if (rect != null) rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    if (rect != null)
+                        rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
 

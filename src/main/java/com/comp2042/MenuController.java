@@ -17,13 +17,54 @@ public class MenuController {
     private Button controlsButton;
     @FXML
     private Button exitButton;
-
+    @FXML
+    private javafx.scene.text.Text titleText;
 
     @FXML
     private void initialize() {
         playButton.setOnAction(e -> startGame());
         controlsButton.setOnAction(e -> showControls());
         exitButton.setOnAction(e -> ((Stage) exitButton.getScene().getWindow()).close());
+
+        // Add button animations
+        addButtonAnimation(playButton);
+        addButtonAnimation(controlsButton);
+        addButtonAnimation(exitButton);
+
+        // Add title pulse animation
+        if (titleText != null) {
+            addTitlePulse(titleText);
+        }
+    }
+
+    private void addButtonAnimation(Button button) {
+        button.setOnMouseEntered(e -> {
+            javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(150),
+                    button);
+            st.setToX(1.08);
+            st.setToY(1.08);
+            st.play();
+        });
+
+        button.setOnMouseExited(e -> {
+            javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(150),
+                    button);
+            st.setToX(1.0);
+            st.setToY(1.0);
+            st.play();
+        });
+    }
+
+    private void addTitlePulse(javafx.scene.text.Text titleText) {
+        javafx.animation.ScaleTransition pulse = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(1500),
+                titleText);
+        pulse.setFromX(1.0);
+        pulse.setFromY(1.0);
+        pulse.setToX(1.02);
+        pulse.setToY(1.02);
+        pulse.setAutoReverse(true);
+        pulse.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        pulse.play();
     }
 
     private void startGame() {
@@ -49,16 +90,24 @@ public class MenuController {
 
     private void showControls() {
         Alert controls = new Alert(Alert.AlertType.INFORMATION);
-        controls.setTitle("Controls");
-        controls.setHeaderText("Game Controls");
+        controls.setTitle("⌨ GAME CONTROLS");
+        controls.setHeaderText("Master the Game");
         controls.setContentText(
-                "← / → : Move Left / Right\n" +
-                        "↓ : Move Down\n" +
-                        "↑ : Rotate\n" +
-                        "P : Pause / Resume\n" +
-                        "R : Restart Game\n" +
-                        "Space : Hard Drop"
-        );
+                "MOVEMENT:\n" +
+                        "  ← / A  →  / D    Move Left / Right\n" +
+                        "  ↓ / S             Move Down (Soft Drop)\n" +
+                        "  Space             Hard Drop (Instant Fall)\n\n" +
+                        "ROTATION:\n" +
+                        "  ↑ / W             Rotate Brick\n\n" +
+                        "GAME CONTROLS:\n" +
+                        "  P                  Pause / Resume Game\n" +
+                        "  R / N              Restart Game\n\n" +
+                        "STRATEGY TIPS:\n" +
+                        "  • Plan your moves ahead\n" +
+                        "  • Fill lines completely to clear them\n" +
+                        "  • Stack strategically for combos\n" +
+                        "  • Use the ghost piece to guide placement");
+        controls.setResizable(true);
         controls.showAndWait();
     }
 }
