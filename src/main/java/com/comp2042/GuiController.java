@@ -721,6 +721,46 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(true);
         gameOverPanel.toFront();
         isGameOver.setValue(true);
+
+        // Add dramatic screen shake animation
+        animateScreenShake(gamePanel);
+
+        // Add game over text pulse animation
+        gameOverPanel.playGameOverAnimation();
+    }
+
+    /**
+     * Animate a dramatic screen shake effect for game over
+     */
+    private void animateScreenShake(javafx.scene.layout.GridPane target) {
+        javafx.animation.Timeline shakeTimeline = new javafx.animation.Timeline();
+
+        // Create multiple rapid position changes for shake effect
+        double shakeDistance = 8.0;
+        javafx.util.Duration shakeDuration = javafx.util.Duration.millis(50);
+
+        // Add keyframes for shake animation
+        shakeTimeline.getKeyFrames().addAll(
+                new javafx.animation.KeyFrame(javafx.util.Duration.ZERO,
+                        new javafx.animation.KeyValue(target.translateXProperty(), 0)),
+                new javafx.animation.KeyFrame(shakeDuration,
+                        new javafx.animation.KeyValue(target.translateXProperty(), shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(2),
+                        new javafx.animation.KeyValue(target.translateXProperty(), -shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(3),
+                        new javafx.animation.KeyValue(target.translateXProperty(), shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(4),
+                        new javafx.animation.KeyValue(target.translateXProperty(), -shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(5),
+                        new javafx.animation.KeyValue(target.translateXProperty(), shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(6),
+                        new javafx.animation.KeyValue(target.translateXProperty(), -shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(7),
+                        new javafx.animation.KeyValue(target.translateXProperty(), shakeDistance)),
+                new javafx.animation.KeyFrame(shakeDuration.multiply(8),
+                        new javafx.animation.KeyValue(target.translateXProperty(), 0)));
+
+        shakeTimeline.play();
     }
 
     public void newGame(ActionEvent actionEvent) {

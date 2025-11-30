@@ -132,6 +132,40 @@ public class PauseMenuController {
     public void setPauseContext(GuiController guiController, Stage pauseStage) {
         this.guiController = guiController;
         this.pauseStage = pauseStage;
+
+        // Add slide-in animation when the pause menu is shown
+        pauseStage.setOnShown(e -> animateSlideIn());
+    }
+
+    /**
+     * Animate the pause menu sliding in from the top with a smooth scale effect
+     */
+    private void animateSlideIn() {
+        javafx.scene.layout.VBox root = (javafx.scene.layout.VBox) pauseStage.getScene().getRoot();
+
+        // Set initial state - scaled down and transparent
+        root.setScaleX(0.8);
+        root.setScaleY(0.8);
+        root.setOpacity(0.0);
+
+        // Create scale transition
+        javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
+                javafx.util.Duration.millis(400), root);
+        scaleTransition.setFromX(0.8);
+        scaleTransition.setFromY(0.8);
+        scaleTransition.setToX(1.0);
+        scaleTransition.setToY(1.0);
+
+        // Create fade transition
+        javafx.animation.FadeTransition fadeTransition = new javafx.animation.FadeTransition(
+                javafx.util.Duration.millis(400), root);
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+
+        // Run both transitions in parallel
+        javafx.animation.ParallelTransition parallelTransition = new javafx.animation.ParallelTransition(
+                scaleTransition, fadeTransition);
+        parallelTransition.play();
     }
 
     /**
