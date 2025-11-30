@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="com.comp2042.PauseMenuController"
+    prefWidth="500" prefHeight="400"
+    style="-fx-background-color: rgba(0, 0, 0, 0.85); -fx-padding: 0;">
+
+    <!-- Semi-transparent dark overlay -->
+    <Pane style="-fx-background-color: rgba(0, 0, 0, 0.7);" />
+
+    <!-- Pause Menu Container -->
+    <VBox alignment="CENTER" spacing="30" style="-fx-padding: 40;">
+
+        <!-- Pause Title -->
+        <VBox alignment="CENTER" spacing="10">
+            <Text text="PAUSED"
+                style="-fx-font-size: 56px; -fx-font-weight: bold; -fx-fill: #00ff41; -fx-font-family: 'Courier New'; -fx-text-alignment: center;" />
+        </VBox>
+
+        <!-- Button Container -->
+        <VBox spacing="15" alignment="CENTER">
+
+            <!-- Resume Button -->
+            <Button text="▶ RESUME" fx:id="resumeButton"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 50; -fx-font-family: 'Courier New'; 
+                           -fx-background-color: linear-gradient(to bottom, #00cc00, #009900); 
+                           -fx-text-fill: white; -fx-border-radius: 8; -fx-background-radius: 8; 
+                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+                           -fx-cursor: hand;"
+                prefWidth="240" prefHeight="45" />
+
+            <!-- Controls Button -->
+            <Button text="⌨ CONTROLS" fx:id="controlsButton"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 50; -fx-font-family: 'Courier New'; 
+                           -fx-background-color: linear-gradient(to bottom, #00d4ff, #0099cc); 
+                           -fx-text-fill: white; -fx-border-radius: 8; -fx-background-radius: 8; 
+                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+                           -fx-cursor: hand;"
+                prefWidth="240" prefHeight="45" />
+
+            <!-- Main Menu Button -->
+            <Button text="🏠 MAIN MENU" fx:id="mainMenuButton"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 14 50; -fx-font-family: 'Courier New'; 
+                           -fx-background-color: linear-gradient(to bottom, #ff6b35, #ee5a6f); 
+                           -fx-text-fill: white; -fx-border-radius: 8; -fx-background-radius: 8; 
+                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+                           -fx-cursor: hand;"
+                prefWidth="240" prefHeight="45" />
+        </VBox>
+
+        <!-- Footer -->
+        <VBox alignment="CENTER" spacing="5">
+            <Text text="Press ESC to resume"
+                style="-fx-font-size: 12px; -fx-fill: #00ff41; -fx-font-family: 'Courier New'; -fx-opacity: 0.6; -fx-text-alignment: center;" />
+        </VBox>
+    </VBox>
+
+</StackPane>

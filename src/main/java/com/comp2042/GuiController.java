@@ -182,6 +182,10 @@ public class GuiController implements Initializable {
             newGame(null);
             keyEvent.consume();
         }
+        if (code == KeyCode.ESCAPE) {
+            openPauseMenu();
+            keyEvent.consume();
+        }
     }
 
     // =============================================================================
@@ -698,6 +702,52 @@ public class GuiController implements Initializable {
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
+    }
+
+    /**
+     * Open the pause menu dialog (triggered by ESC key).
+     */
+    private void openPauseMenu() {
+        if (isGameOver.getValue()) {
+            return;
+        }
+
+        // Pause the game first
+        pauseGame();
+
+        try {
+            java.net.URL location = getClass().getClassLoader().getResource("pauseMenu.fxml");
+            javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader(location);
+            javafx.scene.Parent root = fxmlLoader.load();
+            PauseMenuController pauseController = fxmlLoader.getController();
+
+            javafx.stage.Stage pauseStage = new javafx.stage.Stage();
+            pauseStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            pauseStage.setScene(new javafx.scene.Scene(root));
+            pauseStage.setTitle("Pause Menu");
+
+            // Get the main game window to set owner and modality
+            javafx.stage.Stage gameStage = (javafx.stage.Stage) gamePanel.getScene().getWindow();
+            pauseStage.initOwner(gameStage);
+            pauseStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            // Pass context to pause controller
+            pauseController.setPauseContext(this, pauseStage);
+
+            // Handle ESC key on pause menu
+            root.setOnKeyPressed(pauseController::handleKeyEvent);
+
+            pauseStage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Resume game from pause menu.
+     */
+    public void resumeFromPause() {
+        resumeGame();
     }
 
     // =============================================================================
