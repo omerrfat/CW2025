@@ -16,6 +16,7 @@ public class SimpleBoard implements Board {
     private final Score score;
     private Brick currentBrick;
     private Brick nextBrick; // stores the next piece
+    private Brick heldBrick; // stores the held piece for hold feature
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -24,6 +25,7 @@ public class SimpleBoard implements Board {
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
+        heldBrick = null; // Initialize held brick as empty
         // Initialize: set the first "next" brick (current will be created
         // later when the game starts via createNewBrick())
         nextBrick = brickGenerator.getBrick(); // consume first into preview
@@ -51,8 +53,7 @@ public class SimpleBoard implements Board {
         }
 
         // convert ghost shape into coordinates for GUI
-        int[][] ghostCoords = MatrixOperations.getOccupiedCells(shape, col, ghostRow);
-        return ghostCoords;
+        return MatrixOperations.getOccupiedCells(shape, col, ghostRow);
     }
 
     @Override
@@ -144,7 +145,7 @@ public class SimpleBoard implements Board {
         // Get the next brick shape directly from the nextBrick object
         int[][] nextBrickShape = null;
         if (nextBrick != null && nextBrick.getShapeMatrix() != null && !nextBrick.getShapeMatrix().isEmpty()) {
-            nextBrickShape = nextBrick.getShapeMatrix().get(0); // Get first rotation state
+            nextBrickShape = nextBrick.getShapeMatrix().getFirst(); // Get first rotation state
         }
 
         // Get the next 3 bricks for the preview panel
@@ -175,15 +176,15 @@ public class SimpleBoard implements Board {
         Brick b3 = (peekTwo.length > 1) ? peekTwo[1] : null;
 
         int[][] brick1 = (b1 != null && b1.getShapeMatrix() != null && !b1.getShapeMatrix().isEmpty())
-                ? b1.getShapeMatrix().get(0)
+                ? b1.getShapeMatrix().getFirst()
                 : new int[4][4];
 
         int[][] brick2 = (b2 != null && b2.getShapeMatrix() != null && !b2.getShapeMatrix().isEmpty())
-                ? b2.getShapeMatrix().get(0)
+                ? b2.getShapeMatrix().getFirst()
                 : new int[4][4];
 
         int[][] brick3 = (b3 != null && b3.getShapeMatrix() != null && !b3.getShapeMatrix().isEmpty())
-                ? b3.getShapeMatrix().get(0)
+                ? b3.getShapeMatrix().getFirst()
                 : new int[4][4];
 
         return new NextThreeBricksInfo(brick1, brick2, brick3);
@@ -215,6 +216,49 @@ public class SimpleBoard implements Board {
         brickGenerator = new RandomBrickGenerator();
         // Set first preview brick and create the initial current piece
         nextBrick = brickGenerator.getBrick();
+        heldBrick = null; // Reset held brick for new game
         createNewBrick();
+    }
+    /**
+     * Hold the current brick and swap it with the held brick.
+     */
+    @Override
+    public ViewData holdPiece() {
+        if (currentBrick == null) {
+            return getViewData(); // Can't hold if no current piece
+        }
+
+        // Swap current brick with held brick
+        Brick temp = currentBrick;
+        currentBrick = heldBrick;
+        heldBrick = temp;
+
+        // If current brick is now null (first hold), take the next piece
+        if (currentBrick == null) {
+            currentBrick = nextBrick;
+            nextBrick = brickGenerator.getBrick();
+        }
+
+        // Reset the rotation state and position for the new current brick
+        brickRotator.setBrick(currentBrick);
+        currentOffset = new Point(4, 0);
+
+        return getViewData();
+    }
+
+    @Override
+    public ViewData getHeldPiece() {
+        if (heldBrick == null) {
+            return null;
+        }
+
+        // Create ViewData for the held piece with its first rotation state
+        int[][] heldBrickShape = null;
+        if (heldBrick.getShapeMatrix() != null && !heldBrick.getShapeMatrix().isEmpty()) {
+            heldBrickShape = heldBrick.getShapeMatrix().get(0);
+        }
+
+        // Position at (0,0) since held brick is displayed separately, not on board
+        return new ViewData(heldBrickShape, 0, 0, null);
     }
 }

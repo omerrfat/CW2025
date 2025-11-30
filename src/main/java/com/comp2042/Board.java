@@ -23,4 +23,8 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
+    ViewData holdPiece();
+
+    ViewData getHeldPiece();
 }

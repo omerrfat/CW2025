@@ -13,7 +13,8 @@ public interface InputEventListener {
     // New method for hard dropping of the blocks
     DownData onHardDropEvent(MoveEvent event);
 
-    void createNewGame();
+    ViewData onHoldEvent(MoveEvent event);
 
+    void createNewGame();
 
 }

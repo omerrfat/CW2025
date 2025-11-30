@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"com.comp2042"},{"l":"com.comp2042.logic.bricks"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"com.comp2042"},{"l":"com.comp2042.logic.bricks"},{"l":"com.comp2042.util"}];updateSearchResults();

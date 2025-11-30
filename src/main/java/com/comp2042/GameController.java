@@ -135,6 +135,14 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
+    @Override
+    public ViewData onHoldEvent(MoveEvent event) {
+        ViewData viewData = board.holdPiece();
+        ViewData heldData = board.getHeldPiece();
+        viewGuiController.updateHoldPreview(heldData);
+        return viewData;
+    }
+
     public void restartGame() {
         paused = false;
         board.newGame();

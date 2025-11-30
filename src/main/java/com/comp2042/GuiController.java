@@ -51,20 +51,26 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane nextPreview2;
     @FXML
+    private GridPane holdPreview;
+    @FXML
     private GameOverPanel gameOverPanel;
     @FXML
     private Label scoreLabel;
+    @FXML
+    private Label highScoreLabel;
 
     // ========== DISPLAY MATRICES ==========
     private Rectangle[][] displayMatrix; // Game board background
     private Rectangle[][] rectangles; // Current falling piece
     private Rectangle[][] nextBrickRectangles; // Next piece preview
+    private Rectangle[][] holdBrickRectangles; // Hold piece preview
 
     // ========== GAME STATE ==========
     private InputEventListener eventListener;
     private Timeline timeLine;
     private final BooleanProperty isPause = new SimpleBooleanProperty(false);
     private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
+    private int highScore = 0;
 
     // =============================================================================
     // INITIALIZATION
@@ -99,6 +105,7 @@ public class GuiController implements Initializable {
         initializeBoard(boardMatrix);
         initializeCurrentBrick(brick);
         initializeNextBrickPreview(brick);
+        initializeHoldPreview();
         startGameLoop();
     }
 
@@ -167,6 +174,10 @@ public class GuiController implements Initializable {
         }
         if (code == KeyCode.SPACE) {
             moveDownHard(new MoveEvent(EventType.DOWN, EventSource.USER));
+            keyEvent.consume();
+        }
+        if (code == KeyCode.H) {
+            refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.DOWN, EventSource.USER)));
             keyEvent.consume();
         }
     }
@@ -369,6 +380,48 @@ public class GuiController implements Initializable {
         int offsetRow = (brickData.length - pieceHeight) / 2 - minRow;
 
         return new CenteringOffset(offsetRow, offsetCol);
+    }
+
+    // =============================================================================
+    // RENDERING - HOLD PIECE PREVIEW
+    // =============================================================================
+
+    public void initializeHoldPreview() {
+        if (holdPreview == null) {
+            return;
+        }
+        holdPreview.getChildren().clear();
+        holdBrickRectangles = new Rectangle[4][4];
+    }
+
+    public void updateHoldPreview(ViewData heldBrick) {
+        if (holdPreview == null) {
+            return;
+        }
+
+        // Clear previous hold display
+        holdPreview.getChildren().clear();
+
+        // If no brick is held, just show empty preview
+        if (heldBrick == null) {
+            return;
+        }
+
+        int[][] heldBrickData = heldBrick.getBrickData();
+        holdBrickRectangles = new Rectangle[heldBrickData.length][heldBrickData[0].length];
+
+        CenteringOffset offset = calculateCenteringOffset(heldBrickData);
+
+        for (int i = 0; i < heldBrickData.length; i++) {
+            for (int j = 0; j < heldBrickData[i].length; j++) {
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
+                rectangle.setFill(getFillColor(heldBrickData[i][j]));
+                rectangle.setArcHeight(Constants.BRICK_ARC_SIZE);
+                rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
+                holdBrickRectangles[i][j] = rectangle;
+                holdPreview.add(rectangle, j + offset.col, i + offset.row);
+            }
+        }
     }
 
     // =============================================================================
@@ -647,6 +700,14 @@ public class GuiController implements Initializable {
             scoreLabel.textProperty().unbind();
         }
         scoreLabel.textProperty().bind(integerProperty.asString());
+
+        // Listen for score changes to update high score
+        integerProperty.addListener((obs, oldVal, newVal) -> {
+            if (newVal.intValue() > highScore) {
+                highScore = newVal.intValue();
+                highScoreLabel.setText(String.valueOf(highScore));
+            }
+        });
     }
 
     // =============================================================================

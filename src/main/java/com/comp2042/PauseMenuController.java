@@ -81,20 +81,25 @@ public class PauseMenuController {
      */
     private void goToMainMenu() {
         try {
+            // Close pause menu first
+            if (pauseStage != null) {
+                pauseStage.close();
+            }
+
+            // Get the main game stage (owner of pause stage)
+            Stage gameStage = (Stage) pauseStage.getOwner();
+            if (gameStage == null) {
+                gameStage = (Stage) mainMenuButton.getScene().getWindow();
+            }
+
             URL location = getClass().getClassLoader().getResource("menu.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(location);
             javafx.scene.Parent root = fxmlLoader.load();
 
-            Stage stage = (Stage) mainMenuButton.getScene().getWindow();
-
             Scene menuScene = new Scene(root, 600, 700);
-            stage.setScene(menuScene);
-            stage.setTitle("Tetris - Main Menu");
-            stage.show();
-
-            if (pauseStage != null) {
-                pauseStage.close();
-            }
+            gameStage.setScene(menuScene);
+            gameStage.setTitle("Tetris - Main Menu");
+            gameStage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
