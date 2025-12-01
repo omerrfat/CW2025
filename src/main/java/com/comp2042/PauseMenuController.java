@@ -8,6 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import java.net.URL;
 
 /**
@@ -106,14 +108,28 @@ public class PauseMenuController {
     }
 
     /**
-     * add smooth hover animation to buttons.
+     * add smooth hover animation to buttons with neon glow effects.
      */
     private void addButtonAnimation(Button button) {
         button.setOnMouseEntered(e -> {
             javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(150),
                     button);
-            st.setToX(1.08);
-            st.setToY(1.08);
+            st.setToX(1.12);
+            st.setToY(1.12);
+            
+            DropShadow glow = new DropShadow();
+            glow.setRadius(15);
+            glow.setSpread(0.5);
+            
+            if (button == resumeButton) {
+                glow.setColor(Color.web("#00cc00"));
+            } else if (button == controlsButton) {
+                glow.setColor(Color.web("#00d4ff"));
+            } else if (button == mainMenuButton) {
+                glow.setColor(Color.web("#ff6b35"));
+            }
+            
+            button.setEffect(glow);
             st.play();
         });
 
@@ -122,11 +138,26 @@ public class PauseMenuController {
                     button);
             st.setToX(1.0);
             st.setToY(1.0);
+            button.setEffect(null);
             st.play();
         });
-    }
-
-    /**
+        
+        button.setOnMousePressed(e -> {
+            javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
+                    button);
+            st.setToX(0.95);
+            st.setToY(0.95);
+            st.play();
+        });
+        
+        button.setOnMouseReleased(e -> {
+            javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
+                    button);
+            st.setToX(1.12);
+            st.setToY(1.12);
+            st.play();
+        });
+    }    /**
      * set the parent GuiController and pause Stage.
      */
     public void setPauseContext(GuiController guiController, Stage pauseStage) {
