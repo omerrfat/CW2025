@@ -84,6 +84,7 @@ public class ScoreManager {
      * Updates the high score display label.
      */
     private void updateHighScoreDisplay() {
-        highScoreLabel.setText(String.format("High Score: %d", highScore));
+
+        highScoreLabel.setText(String.valueOf(highScore));
     }
 }

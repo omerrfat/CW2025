@@ -24,7 +24,7 @@
     </VBox>
 
     <Pane prefWidth="420" prefHeight="510" style="-fx-background-color: transparent;"
-        AnchorPane.topAnchor="45" AnchorPane.leftAnchor="130" AnchorPane.rightAnchor="50"
+        AnchorPane.topAnchor="45" AnchorPane.leftAnchor="130"
         AnchorPane.bottomAnchor="45">
 
         <!-- CURRENT BRICK PANEL (for an active piece) -->
