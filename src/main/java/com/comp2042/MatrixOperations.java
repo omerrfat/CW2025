@@ -6,6 +6,20 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * MatrixOperations - Utility class for 2D matrix operations in the game.
+ * 
+ * Responsibilities:
+ * - Brick collision detection with board and boundaries
+ * - Line clear detection and board state updates
+ * - Matrix copying for data safety
+ * - Brick placement and merging operations
+ * 
+ * All methods are static; class is not instantiable.
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class MatrixOperations {
 
     // we don't want to instantiate this utility class

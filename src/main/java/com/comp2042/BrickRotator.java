@@ -2,6 +2,18 @@ package com.comp2042;
 
 import com.comp2042.logic.bricks.Brick;
 
+/**
+ * BrickRotator - Manages brick rotation state and calculations.
+ * 
+ * Responsibilities:
+ * - Tracks current rotation state of active brick
+ * - Calculates next rotation shape in sequence
+ * - Handles rotation wrap-around (4 rotations per standard Tetris piece)
+ * - Stores reference to next brick for lookahead
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class BrickRotator {
 
     private Brick brick;

@@ -14,6 +14,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * NotificationPanel - Displays notifications (score bonuses, line clears) with
+ * animation.
+ * 
+ * Responsibilities:
+ * - Shows temporary notification messages (e.g., "+100 Points", "Line Clear!")
+ * - Animates notifications with fade and translation effects
+ * - Automatically removes notifications after display duration
+ * - Applies glow effect for visual emphasis
+ * 
+ * Animation: Parallel fade-out and upward translation over 1.5 seconds
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class NotificationPanel extends BorderPane {
 
     public NotificationPanel(String text) {

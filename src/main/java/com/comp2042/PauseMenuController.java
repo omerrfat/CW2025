@@ -13,8 +13,18 @@ import javafx.scene.paint.Color;
 import java.net.URL;
 
 /**
- * Controller for the pause menu that appears when ESC is pressed during
- * gameplay.
+ * PauseMenuController - Controls the pause menu UI during gameplay.
+ * 
+ * Responsibilities:
+ * - Manages pause menu button interactions (Resume, Controls, Main Menu)
+ * - Handles scene transitions between the pause menu and other menus
+ * - Provides animated button feedback with neon glow effects
+ * - Color-coded buttons: Green for Resume, Cyan for Controls, Orange for Main
+ * Menu
+ * - Implements smooth scale and drop shadow animations on hover/press
+ * 
+ * @author Umer Imran
+ * @version 2.0
  */
 public class PauseMenuController {
 
@@ -40,6 +50,7 @@ public class PauseMenuController {
     }
 
     /**
+     *
      * resume the game and close the pause menu.
      */
     private void resume() {
@@ -52,7 +63,7 @@ public class PauseMenuController {
     }
 
     /**
-     * show the controls dialog.
+     * show the controls' dialog.
      */
     private void showControls() {
         Alert controls = new Alert(Alert.AlertType.INFORMATION);
@@ -79,16 +90,17 @@ public class PauseMenuController {
     }
 
     /**
-     * return to main menu from pause.
+     * return to the main menu from pause.
      */
     private void goToMainMenu() {
         try {
-            // Close pause menu first
+            // Close the pause menu first
             if (pauseStage != null) {
                 pauseStage.close();
             }
 
             // Get the main game stage (owner of pause stage)
+            assert pauseStage != null;
             Stage gameStage = (Stage) pauseStage.getOwner();
             if (gameStage == null) {
                 gameStage = (Stage) mainMenuButton.getScene().getWindow();
@@ -116,11 +128,11 @@ public class PauseMenuController {
                     button);
             st.setToX(1.12);
             st.setToY(1.12);
-            
+
             DropShadow glow = new DropShadow();
             glow.setRadius(15);
             glow.setSpread(0.5);
-            
+
             if (button == resumeButton) {
                 glow.setColor(Color.web("#00cc00"));
             } else if (button == controlsButton) {
@@ -128,7 +140,7 @@ public class PauseMenuController {
             } else if (button == mainMenuButton) {
                 glow.setColor(Color.web("#ff6b35"));
             }
-            
+
             button.setEffect(glow);
             st.play();
         });
@@ -141,7 +153,7 @@ public class PauseMenuController {
             button.setEffect(null);
             st.play();
         });
-        
+
         button.setOnMousePressed(e -> {
             javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
                     button);
@@ -149,7 +161,7 @@ public class PauseMenuController {
             st.setToY(0.95);
             st.play();
         });
-        
+
         button.setOnMouseReleased(e -> {
             javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
                     button);
@@ -157,7 +169,9 @@ public class PauseMenuController {
             st.setToY(1.12);
             st.play();
         });
-    }    /**
+    }
+
+    /**
      * set the parent GuiController and pause Stage.
      */
     public void setPauseContext(GuiController guiController, Stage pauseStage) {
@@ -200,7 +214,7 @@ public class PauseMenuController {
     }
 
     /**
-     * handle ESC key to close pause menu and resume.
+     * handle ESC key to close the pause menu and resume.
      */
     public void handleKeyEvent(KeyEvent event) {
         if (event.getCode() == KeyCode.ESCAPE) {

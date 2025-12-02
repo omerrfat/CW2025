@@ -5,6 +5,22 @@ import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 import java.awt.*;
 
+/**
+ * SimpleBoard - Implementation of the Board interface.
+ * 
+ * Implements the core Tetris game logic including:
+ * - Brick movement and collision detection
+ * - Line clearing with scoring
+ * - Next piece queue management
+ * - Held piece swapping
+ * - Ghost piece (fall projection) calculation
+ * - Board state management
+ * 
+ * Uses 25x10 game board (standard Tetris dimensions).
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -219,6 +235,7 @@ public class SimpleBoard implements Board {
         heldBrick = null; // Reset held brick for new game
         createNewBrick();
     }
+
     /**
      * Hold the current brick and swap it with the held brick.
      */

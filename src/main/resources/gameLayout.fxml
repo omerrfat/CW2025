@@ -27,9 +27,9 @@
         AnchorPane.topAnchor="45" AnchorPane.leftAnchor="130" AnchorPane.rightAnchor="50"
         AnchorPane.bottomAnchor="45">
 
-        <!-- CURRENT BRICK PANEL (for active piece) -->
+        <!-- CURRENT BRICK PANEL (for an active piece) -->
         <GridPane fx:id="brickPanel" vgap="1" hgap="1"
-            layoutX="10" layoutY="0" />
+            layoutX="10" layoutY="40" />
 
         <!-- GAME BOARD -->
         <BorderPane styleClass="gameBoard" fx:id="gameBoard"

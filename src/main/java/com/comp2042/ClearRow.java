@@ -1,5 +1,20 @@
 package com.comp2042;
 
+/**
+ * ClearRow - Immutable data class containing line clear results.
+ * 
+ * Holds:
+ * - Number of lines removed
+ * - Updated board matrix after line removal
+ * - Score bonus for the cleared lines
+ * - Array of row indices that were cleared (for animation)
+ * 
+ * Provides safe access to data via copy to prevent external modification.
+ * Used to communicate line clear results from game logic to UI.
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public final class ClearRow {
 
     private final int linesRemoved;

@@ -1,5 +1,17 @@
 package com.comp2042;
 
+/**
+ * DownData - Data container for brick down movement results.
+ * 
+ * Encapsulates:
+ * - ClearRow information (if any lines were cleared)
+ * - Updated ViewData reflecting new game state after down movement
+ * 
+ * Used to communicate brick movement and line clear results to UI layer.
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public final class DownData {
     private final ClearRow clearRow;
     private final ViewData viewData;

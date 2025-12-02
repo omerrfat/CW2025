@@ -11,6 +11,19 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import java.net.URL;
 
+/**
+ * MenuController - Controls the main game menu UI.
+ * 
+ * Responsibilities:
+ * - Manages main menu button interactions (Play, Controls, Exit)
+ * - Handles scene transitions to game and controls menu
+ * - Provides animated button feedback with neon glow effects
+ * - Color-coded buttons: Orange for Play, Cyan for Controls, Gray for Exit
+ * - Implements smooth scale and drop shadow animations on hover/press
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class MenuController {
 
     @FXML
@@ -28,7 +41,7 @@ public class MenuController {
         controlsButton.setOnAction(e -> showControls());
         exitButton.setOnAction(e -> ((Stage) exitButton.getScene().getWindow()).close());
 
-        // Add button animations
+        // add button animations
         addButtonAnimation(playButton);
         addButtonAnimation(controlsButton);
         addButtonAnimation(exitButton);
@@ -45,19 +58,19 @@ public class MenuController {
                     button);
             st.setToX(1.12);
             st.setToY(1.12);
-            
+
             DropShadow glow = new DropShadow();
             glow.setRadius(15);
             glow.setSpread(0.5);
-            
+
             if (button == playButton) {
-                glow.setColor(Color.web("#ff6b35"));
+                glow.setColor(Color.web("#ef531aff"));
             } else if (button == controlsButton) {
                 glow.setColor(Color.web("#00d4ff"));
             } else {
                 glow.setColor(Color.web("#666666"));
             }
-            
+
             button.setEffect(glow);
             st.play();
         });
@@ -70,7 +83,7 @@ public class MenuController {
             button.setEffect(null);
             st.play();
         });
-        
+
         button.setOnMousePressed(e -> {
             javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
                     button);
@@ -78,7 +91,7 @@ public class MenuController {
             st.setToY(0.95);
             st.play();
         });
-        
+
         button.setOnMouseReleased(e -> {
             javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(100),
                     button);
@@ -86,7 +99,9 @@ public class MenuController {
             st.setToY(1.12);
             st.play();
         });
-    }    private void addTitlePulse(javafx.scene.text.Text titleText) {
+    }
+
+    private void addTitlePulse(javafx.scene.text.Text titleText) {
         javafx.animation.ScaleTransition pulse = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(1500),
                 titleText);
         pulse.setFromX(1.0);

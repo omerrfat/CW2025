@@ -33,7 +33,20 @@ import java.util.ResourceBundle;
 
 /**
  * Main GUI Controller for the Tetris game.
- * Handles rendering, user input, and game state management.
+ * 
+ * Responsible for:
+ * - Rendering the game board, falling brick, and next pieces preview
+ * - Handling user input (keyboard events)
+ * - Managing game state (pause, game over, animations)
+ * - Displaying score and high score
+ * - Showing the held piece in the hold window
+ * - Animating line clears with visual feedback
+ * 
+ * The controller communicates with GameController for game logic
+ * and receives updates via ViewData objects.
+ * 
+ * @author Umer Imran
+ * @version 2.0
  */
 public class GuiController implements Initializable {
 
@@ -99,7 +112,11 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Initialize the game view with board matrix and first brick
+     * Initialize the game view with board matrix and first brick.
+     * Called once at game startup to set up all UI components.
+     * 
+     * @param boardMatrix The game board matrix (width x height)
+     * @param brick       The first falling brick data
      */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         initializeBoard(boardMatrix);
@@ -336,7 +353,6 @@ public class GuiController implements Initializable {
             return;
         }
 
-        GridPane target = nextPreview0;
         int[][] nextBrickData = brick.getNextBrickData();
 
         // Reinitialize if dimensions changed
@@ -394,6 +410,13 @@ public class GuiController implements Initializable {
         holdBrickRectangles = new Rectangle[4][4];
     }
 
+    /**
+     * Updates the held piece preview display.
+     * 
+     * Called when the player swaps pieces with hold feature.
+     * 
+     * @param heldBrick ViewData of the held brick (null if no brick is held)
+     */
     public void updateHoldPreview(ViewData heldBrick) {
         if (holdPreview == null) {
             return;
@@ -478,6 +501,12 @@ public class GuiController implements Initializable {
     // RENDERING - GAME BOARD BACKGROUND
     // =============================================================================
 
+    /**
+     * Refresh the game background display after board changes.
+     * Updates the visual representation of merged bricks on the board.
+     * 
+     * @param board The current game board matrix
+     */
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -530,6 +559,13 @@ public class GuiController implements Initializable {
      * flash the cleared rows (based on beforeMatrix which represents the board
      * AFTER merge but BEFORE clears).
      * after animation completes, it will invoke the provided onFinished callback
+     */
+    /**
+     * Animate the clearing of complete lines with flash and collapse effects.
+     * 
+     * @param clearRow     The information about cleared rows
+     * @param beforeMatrix The board state before clearing
+     * @param onFinished   Callback to execute when animation completes
      */
     public void animateLineClear(ClearRow clearRow, int[][] beforeMatrix, Runnable onFinished) {
         if (clearRow == null || clearRow.getLinesRemoved() == 0 || beforeMatrix == null) {
@@ -668,6 +704,11 @@ public class GuiController implements Initializable {
     // UI - SCORE DISPLAY
     // =============================================================================
 
+    /**
+     * Display score bonus popup animation.
+     * 
+     * @param bonus The bonus points to display
+     */
     public void showScoreBonus(int bonus) {
         Text popup = new Text("+" + bonus);
         popup.setFont(Font.font("Verdana", 22));
@@ -695,6 +736,11 @@ public class GuiController implements Initializable {
         fadeOut.setOnFinished(e -> rootPane.getChildren().remove(popup));
     }
 
+    /**
+     * Binds the score label to the game's score property for real-time updates.
+     * 
+     * @param integerProperty The Score's observable property
+     */
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel.textProperty().isBound()) {
             scoreLabel.textProperty().unbind();
@@ -865,6 +911,14 @@ public class GuiController implements Initializable {
         rectangle.setArcWidth(Constants.BRICK_ARC_SIZE);
     }
 
+    /**
+     * Sets the event listener (GameController) to handle user input events.
+     * 
+     * Required for decoupling GUI from game logic.
+     * 
+     * @param eventListener The InputEventListener implementation to receive input
+     *                      events
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }

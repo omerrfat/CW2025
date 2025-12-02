@@ -1,5 +1,22 @@
 package com.comp2042;
 
+/**
+ * ViewData - Immutable data class containing current game state for UI
+ * rendering.
+ * 
+ * Holds:
+ * - Current brick data and position (x, y coordinates)
+ * - Next brick data for preview
+ * - Information about next three bricks
+ * - Ghost piece coordinates (fall projection)
+ * - Board state for rendering
+ * 
+ * Provides safe access to data via copy to prevent external modification.
+ * Designed for efficient communication between game logic and UI rendering.
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public final class ViewData {
 
     private final int[][] brickData;

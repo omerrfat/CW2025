@@ -6,6 +6,23 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * RandomBrickGenerator - Generates random Tetris bricks using fair
+ * distribution.
+ * 
+ * Responsibilities:
+ * - Randomly selects from 7 standard Tetris pieces (I, J, L, O, S, T, Z)
+ * - Maintains queue of upcoming bricks for preview system
+ * - Ensures fair distribution via random selection
+ * - Pre-generates lookahead bricks for smooth gameplay
+ * 
+ * Queue Structure:
+ * - Position 0: Current active brick
+ * - Positions 1-3: Preview bricks for "Next 3" display
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;

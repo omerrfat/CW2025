@@ -1,5 +1,21 @@
 package com.comp2042;
 
+/**
+ * Main Game Controller - Orchestrates game logic and state.
+ * 
+ * Responsible for:
+ * - Handling all game events from user input
+ * - Communicating with the Board for game mechanics
+ * - Updating the GUI with game state changes
+ * - Managing score tracking
+ * - Handling game over and restart conditions
+ * 
+ * Implements InputEventListener to receive all input events
+ * (movement, rotation, hard drop, hold).
+ * 
+ * @author Umer Imran
+ * @version 2.0
+ */
 public class GameController implements InputEventListener {
 
     private boolean paused = false;
@@ -8,6 +24,11 @@ public class GameController implements InputEventListener {
 
     private GuiController viewGuiController;
 
+    /**
+     * Initializes the GameController with UI reference and initial board state.
+     * 
+     * @param c The GuiController instance for rendering updates
+     */
     public GameController(GuiController c) {
         viewGuiController = c;
         board.createNewBrick();
@@ -16,15 +37,29 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
+    /**
+     * Toggles the pause state of the game.
+     */
     public void togglePause() {
         paused = !paused;
     }
 
+    /**
+     * Returns whether the game is currently paused.
+     * 
+     * @return true if paused, false otherwise
+     */
     public boolean isPaused() {
         return paused;
     }
 
     @Override
+    /**
+     * Handles down movement event (gravity or manual down press).
+     * 
+     * @param event The move event from player or game loop
+     * @return DownData containing updated board state and any line clears
+     */
     public DownData onDownEvent(MoveEvent event) {
         // REMOVED: if (paused) return null;
         // Let GuiController handle pause checks instead
@@ -71,16 +106,30 @@ public class GameController implements InputEventListener {
     }
 
     @Override
+    /**
+     * Creates a new game session, resets board and score.
+     */
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
 
+    /**
+     * Retrieves the current board matrix state.
+     * 
+     * @return The 25x10 game board matrix
+     */
     public int[][] getBoardMatrix() {
         return board.getBoardMatrix();
     }
 
     @Override
+    /**
+     * Handles hard drop event (brick instantly falls to bottom).
+     * 
+     * @param event The hard drop move event
+     * @return DownData containing updated board state and any line clears
+     */
     public DownData onHardDropEvent(MoveEvent event) {
         int dropDistance = 0;
         while (board.moveBrickDown()) {
@@ -118,24 +167,48 @@ public class GameController implements InputEventListener {
     }
 
     @Override
+    /**
+     * Handles left movement event.
+     * 
+     * @param event The left move event
+     * @return ViewData containing updated brick position
+     */
     public ViewData onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
         return board.getViewData();
     }
 
     @Override
+    /**
+     * Handles right movement event.
+     * 
+     * @param event The right move event
+     * @return ViewData containing updated brick position
+     */
     public ViewData onRightEvent(MoveEvent event) {
         board.moveBrickRight();
         return board.getViewData();
     }
 
     @Override
+    /**
+     * Handles brick rotation event.
+     * 
+     * @param event The rotate move event
+     * @return ViewData containing updated rotated brick
+     */
     public ViewData onRotateEvent(MoveEvent event) {
         board.rotateLeftBrick();
         return board.getViewData();
     }
 
     @Override
+    /**
+     * Handles hold piece swap event.
+     * 
+     * @param event The hold move event
+     * @return ViewData containing the swapped brick now in play
+     */
     public ViewData onHoldEvent(MoveEvent event) {
         ViewData viewData = board.holdPiece();
         ViewData heldData = board.getHeldPiece();
@@ -143,6 +216,10 @@ public class GameController implements InputEventListener {
         return viewData;
     }
 
+    /**
+     * Restarts the game - resets board, score, and pause state.
+     * Called when returning from game over to main menu.
+     */
     public void restartGame() {
         paused = false;
         board.newGame();
