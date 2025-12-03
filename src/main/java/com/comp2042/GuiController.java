@@ -87,6 +87,7 @@ public class GuiController implements Initializable {
     // ========== GAME STATE ==========
     private InputEventListener eventListener;
     private Timeline timeLine;
+    private int currentDifficultyLevel = 1; // Default to level 1
 
     // ========== NEW MANAGERS (Refactored Components) ==========
     private BrickRenderer brickRenderer;
@@ -108,6 +109,16 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(false);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+    }
+
+    /**
+     * Sets the difficulty level for the game.
+     * Valid levels: 1, 5, 10, 15
+     * 
+     * @param level the difficulty level (1=Normal, 15=Extreme)
+     */
+    public void setDifficultyLevel(int level) {
+        this.currentDifficultyLevel = level;
     }
 
     /**
@@ -227,8 +238,9 @@ public class GuiController implements Initializable {
     }
 
     private void startGameLoop() {
+        int delayMs = DifficultyManager.getDelayForLevel(currentDifficultyLevel);
         timeLine = new Timeline(new KeyFrame(
-                Duration.millis(Constants.INITIAL_FALL_SPEED_MS),
+                Duration.millis(delayMs),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();

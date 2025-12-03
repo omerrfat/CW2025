@@ -20,9 +20,10 @@ import java.net.URL;
  * - Provides animated button feedback with neon glow effects
  * - Color-coded buttons: Orange for Play, Cyan for Controls, Gray for Exit
  * - Implements smooth scale and drop shadow animations on hover/press
+ * - Manages difficulty level selection (1, 5, 10, 15)
  * 
  * @author Umer Imran
- * @version 2.0
+ * @version 2.1
  */
 public class MenuController {
 
@@ -33,16 +34,25 @@ public class MenuController {
     @FXML
     private Button exitButton;
     @FXML
+    private Button levelButton;
+    @FXML
     private javafx.scene.text.Text titleText;
+
+    private DifficultyManager difficultyManager;
 
     @FXML
     private void initialize() {
+        difficultyManager = new DifficultyManager();
+        updateLevelButtonText();
+
         playButton.setOnAction(e -> startGame());
+        levelButton.setOnAction(e -> toggleLevel());
         controlsButton.setOnAction(e -> showControls());
         exitButton.setOnAction(e -> ((Stage) exitButton.getScene().getWindow()).close());
 
         // add button animations
         addButtonAnimation(playButton);
+        addButtonAnimation(levelButton);
         addButtonAnimation(controlsButton);
         addButtonAnimation(exitButton);
 
@@ -120,6 +130,9 @@ public class MenuController {
             Parent root = fxmlLoader.load();
             GuiController controller = fxmlLoader.getController();
 
+            // Pass the selected difficulty level to the game controller
+            controller.setDifficultyLevel(difficultyManager.getCurrentLevel());
+
             Stage stage = (Stage) playButton.getScene().getWindow();
             Scene gameScene = new Scene(root);
             stage.setResizable(false);
@@ -132,6 +145,16 @@ public class MenuController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void toggleLevel() {
+        difficultyManager.nextLevel();
+        updateLevelButtonText();
+    }
+
+    private void updateLevelButtonText() {
+        levelButton.setText("LEVEL " + difficultyManager.getCurrentLevel());
     }
 
     private void showControls() {
