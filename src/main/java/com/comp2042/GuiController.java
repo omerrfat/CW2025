@@ -131,7 +131,12 @@ public class GuiController implements Initializable {
             KeyCode code = event.getCode();
 
             // Handle game controls through InputHandler
-            inputHandler.handleKeyPressed(event);
+            ViewData viewData = handleGameInput(event);
+
+            // Immediately refresh display for responsive movement
+            if (viewData != null && !gameStateManager.isPaused()) {
+                refreshBrick(viewData);
+            }
 
             // Handle UI-level meta controls
             if (!event.isConsumed()) {
@@ -147,6 +152,38 @@ public class GuiController implements Initializable {
                 }
             }
         });
+    }
+
+    /**
+     * Handle game input and return updated view data for immediate refresh.
+     */
+    private ViewData handleGameInput(KeyEvent event) {
+        if (eventListener == null || gameStateManager.isPaused()) {
+            return null;
+        }
+
+        KeyCode code = event.getCode();
+        ViewData result = null;
+
+        // Check if it's a movement key and get the result
+        if (code == KeyCode.LEFT || code == KeyCode.A) {
+            result = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+            event.consume();
+        } else if (code == KeyCode.RIGHT || code == KeyCode.D) {
+            result = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            event.consume();
+        } else if (code == KeyCode.DOWN || code == KeyCode.S) {
+            DownData downData = eventListener.onDownEvent(new MoveEvent(EventType.DOWN, EventSource.USER));
+            if (downData != null) {
+                result = downData.getViewData();
+            }
+            event.consume();
+        } else {
+            // Let InputHandler handle other keys (rotate, hold, hard drop)
+            inputHandler.handleKeyPressed(event);
+        }
+
+        return result;
     }
 
     /**
