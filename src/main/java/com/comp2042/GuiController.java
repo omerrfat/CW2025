@@ -77,6 +77,8 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
     @FXML
     private Label highScoreLabel;
+    @FXML
+    private javafx.scene.layout.BorderPane gameBoard;
 
     // ========== DISPLAY MATRICES ==========
     private Rectangle[][] displayMatrix; // Game board background
@@ -664,6 +666,11 @@ public class GuiController implements Initializable {
         ParallelTransition pt = new ParallelTransition();
         pt.getChildren().addAll(overlayAnims);
         pt.setOnFinished(e -> {
+            // Play border glow animation
+            if (gameBoard != null) {
+                animationManager.createBorderGlowAnimation(gameBoard).play();
+            }
+
             // overlays finished, remove them and hide the cleared rows underneath
             overlayRects.forEach(rootPane.getChildren()::remove);
             for (int r : cleared) {

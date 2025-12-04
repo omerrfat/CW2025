@@ -151,4 +151,38 @@ public class AnimationManager {
         ParallelTransition parallelTransition = new ParallelTransition(moveUp, fadeOut);
         return parallelTransition;
     }
+
+    /**
+     * Creates a subtle border fade animation for line clears.
+     * 
+     * @param borderTarget The node whose border to animate
+     * @return A Timeline with subtle glow fade effect
+     */
+    public Timeline createBorderGlowAnimation(javafx.scene.layout.BorderPane borderTarget) {
+        Timeline timeline = new Timeline();
+
+        // create a subtle glow effect that appears and fades
+        javafx.scene.effect.DropShadow glow = new javafx.scene.effect.DropShadow();
+        glow.setColor(javafx.scene.paint.Color.RED);
+        glow.setSpread(0.5);
+
+        // grow glow radius smoothly
+        KeyFrame frame1 = new KeyFrame(
+                Duration.millis(0),
+                new KeyValue(glow.radiusProperty(), 0));
+        KeyFrame frame2 = new KeyFrame(
+                Duration.millis(200),
+                new KeyValue(glow.radiusProperty(), 8));
+        // shrink glow radius smoothly
+        KeyFrame frame3 = new KeyFrame(
+                Duration.millis(600),
+                new KeyValue(glow.radiusProperty(), 0));
+
+        timeline.getKeyFrames().addAll(frame1, frame2, frame3);
+
+        timeline.setOnFinished(e -> borderTarget.setEffect(null));
+        borderTarget.setEffect(glow);
+
+        return timeline;
+    }
 }

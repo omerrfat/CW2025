@@ -28,7 +28,7 @@
 }
 
 .gameBoard {
-    -fx-border-color: #ff0000;
+    -fx-border-color: linear-gradient(to top, #ff0000, #553333);
     -fx-border-width: 8px;
     -fx-border-radius: 12px;
 }
