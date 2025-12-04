@@ -9,11 +9,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+import com.comp2042.game.DifficultyManager;
 import java.net.URL;
 
 /**
  * MenuController - Controls the main game menu UI.
- * 
  * Responsibilities:
  * - Manages main menu button interactions (Play, Controls, Exit)
  * - Handles scene transitions to game and controls menu
@@ -194,20 +194,24 @@ public class MenuController {
         controls.setTitle("⌨ GAME CONTROLS");
         controls.setHeaderText("Master the Game");
         controls.setContentText(
-                "MOVEMENT:\n" +
-                        "  ← / A  →  / D    Move Left / Right\n" +
-                        "  ↓ / S             Move Down (Soft Drop)\n" +
-                        "  Space             Hard Drop (Instant Fall)\n\n" +
-                        "ROTATION:\n" +
-                        "  ↑ / W             Rotate Brick\n\n" +
-                        "GAME CONTROLS:\n" +
-                        "  P                  Pause / Resume Game\n" +
-                        "  R / N              Restart Game\n\n" +
-                        "STRATEGY TIPS:\n" +
-                        "  • Plan your moves ahead\n" +
-                        "  • Fill lines completely to clear them\n" +
-                        "  • Stack strategically for combos\n" +
-                        "  • Use the ghost piece to guide placement");
+                """
+                        MOVEMENT:
+                          ← / A  →  / D    Move Left / Right
+                          ↓ / S             Move Down (Soft Drop)
+                          Space             Hard Drop (Instant Fall)
+                        
+                        ROTATION:
+                          ↑ / W             Rotate Brick
+                        
+                        GAME CONTROLS:
+                          P                  Pause / Resume Game
+                          R / N              Restart Game
+                        
+                        STRATEGY TIPS:
+                          • Plan your moves ahead
+                          • Fill lines completely to clear them
+                          • Stack strategically for combos
+                          • Use the ghost piece to guide placement""");
         controls.setResizable(true);
         controls.showAndWait();
     }

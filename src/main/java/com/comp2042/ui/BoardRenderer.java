@@ -1,7 +1,6 @@
 package com.comp2042.ui;
 
 import com.comp2042.util.Constants;
-import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;

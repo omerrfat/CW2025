@@ -1,5 +1,10 @@
 package com.comp2042;
 
+import com.comp2042.game.ObstacleManager;
+import com.comp2042.logic.*;
+import com.comp2042.event.*;
+import com.comp2042.dto.*;
+
 /**
  * Main Game Controller - Orchestrates game logic and state.
  * 
@@ -26,7 +31,6 @@ public class GameController implements InputEventListener {
     private GuiController viewGuiController;
     private ObstacleManager obstacleManager;
     private boolean obstacleMode = false;
-    private int currentDifficultyLevel = 1;
 
     /**
      * Initializes the GameController with UI reference and initial board state.
@@ -49,7 +53,6 @@ public class GameController implements InputEventListener {
      */
     public void enableObstacleMode(int difficultyLevel) {
         this.obstacleMode = true;
-        this.currentDifficultyLevel = difficultyLevel;
 
         // Generate and place obstacles
         int[][] obstacles = obstacleManager.generateObstacles(difficultyLevel);

@@ -2,11 +2,13 @@ package com.comp2042;
 
 import com.comp2042.util.Constants;
 import com.comp2042.ui.AnimationManager;
-import com.comp2042.ui.BoardRenderer;
-import com.comp2042.ui.BrickRenderer;
 import com.comp2042.ui.ScoreManager;
 import com.comp2042.ui.input.InputHandler;
 import com.comp2042.game.GameStateManager;
+import com.comp2042.game.DifficultyManager;
+import com.comp2042.logic.*;
+import com.comp2042.event.*;
+import com.comp2042.dto.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Animation;
@@ -14,11 +16,8 @@ import javafx.application.Platform;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -93,8 +92,6 @@ public class GuiController implements Initializable {
     private boolean obstacleMode = false; // Obstacle Mode flag
 
     // ========== NEW MANAGERS (Refactored Components) ==========
-    private BrickRenderer brickRenderer;
-    private BoardRenderer boardRenderer;
     private AnimationManager animationManager;
     private ScoreManager scoreManager;
     private InputHandler inputHandler;
@@ -137,8 +134,6 @@ public class GuiController implements Initializable {
      * Initialize all refactored manager components.
      */
     private void initializeManagers() {
-        brickRenderer = new BrickRenderer();
-        boardRenderer = new BoardRenderer();
         animationManager = new AnimationManager();
         scoreManager = new ScoreManager(scoreLabel, highScoreLabel);
         inputHandler = new InputHandler();
@@ -349,10 +344,13 @@ public class GuiController implements Initializable {
             int x = coord[1];
             int y = coord[0];
 
-            Rectangle ghostBlock = createGhostBlock();
-            GridPane.setColumnIndex(ghostBlock, x);
-            GridPane.setRowIndex(ghostBlock, y - 2);
-            gamePanel.getChildren().add(ghostBlock);
+            // Only draw ghost piece if it's visible on the board (y >= 2 to account for hidden rows)
+            if (y >= 2) {
+                Rectangle ghostBlock = createGhostBlock();
+                GridPane.setColumnIndex(ghostBlock, x);
+                GridPane.setRowIndex(ghostBlock, y - 2);
+                gamePanel.getChildren().add(ghostBlock);
+            }
         }
     }
 

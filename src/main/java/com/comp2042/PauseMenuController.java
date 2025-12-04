@@ -14,7 +14,6 @@ import java.net.URL;
 
 /**
  * PauseMenuController - Controls the pause menu UI during gameplay.
- * 
  * Responsibilities:
  * - Manages pause menu button interactions (Resume, Controls, Main Menu)
  * - Handles scene transitions between the pause menu and other menus
@@ -70,21 +69,25 @@ public class PauseMenuController {
         controls.setTitle("⌨ GAME CONTROLS");
         controls.setHeaderText("Master the Game");
         controls.setContentText(
-                "MOVEMENT:\n" +
-                        "  ← / A  →  / D    Move Left / Right\n" +
-                        "  ↓ / S             Move Down (Soft Drop)\n" +
-                        "  Space             Hard Drop (Instant Fall)\n\n" +
-                        "ROTATION:\n" +
-                        "  ↑ / W             Rotate Brick\n\n" +
-                        "GAME CONTROLS:\n" +
-                        "  P                  Pause / Resume Game\n" +
-                        "  ESC                Open Pause Menu\n" +
-                        "  R / N              Restart Game\n\n" +
-                        "STRATEGY TIPS:\n" +
-                        "  • Plan your moves ahead\n" +
-                        "  • Fill lines completely to clear them\n" +
-                        "  • Stack strategically for combos\n" +
-                        "  • Use the ghost piece to guide placement");
+                """
+                        MOVEMENT:
+                          ← / A  →  / D    Move Left / Right
+                          ↓ / S             Move Down (Soft Drop)
+                          Space             Hard Drop (Instant Fall)
+                        
+                        ROTATION:
+                          ↑ / W             Rotate Brick
+                        
+                        GAME CONTROLS:
+                          P                  Pause / Resume Game
+                          ESC                Open Pause Menu
+                          R / N              Restart Game
+                        
+                        STRATEGY TIPS:
+                          • Plan your moves ahead
+                          • Fill lines completely to clear them
+                          • Stack strategically for combos
+                          • Use the ghost piece to guide placement""");
         controls.setResizable(true);
         controls.showAndWait();
     }
@@ -186,7 +189,7 @@ public class PauseMenuController {
      * Animate the pause menu sliding in from the top with a smooth scale effect
      */
     private void animateSlideIn() {
-        javafx.scene.layout.VBox root = (javafx.scene.layout.VBox) pauseStage.getScene().getRoot();
+        javafx.scene.layout.StackPane root = (javafx.scene.layout.StackPane) pauseStage.getScene().getRoot();
 
         // Set initial state - scaled down and transparent
         root.setScaleX(0.8);

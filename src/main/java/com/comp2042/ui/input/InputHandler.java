@@ -1,9 +1,9 @@
 package com.comp2042.ui.input;
 
-import com.comp2042.EventSource;
-import com.comp2042.EventType;
-import com.comp2042.InputEventListener;
-import com.comp2042.MoveEvent;
+import com.comp2042.event.EventSource;
+import com.comp2042.event.EventType;
+import com.comp2042.event.InputEventListener;
+import com.comp2042.event.MoveEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
