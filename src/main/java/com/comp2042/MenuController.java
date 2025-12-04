@@ -36,9 +36,12 @@ public class MenuController {
     @FXML
     private Button levelButton;
     @FXML
+    private Button obstacleButton;
+    @FXML
     private javafx.scene.text.Text titleText;
 
     private DifficultyManager difficultyManager;
+    private boolean obstacleMode = false;
 
     @FXML
     private void initialize() {
@@ -47,12 +50,14 @@ public class MenuController {
 
         playButton.setOnAction(e -> startGame());
         levelButton.setOnAction(e -> toggleLevel());
+        obstacleButton.setOnAction(e -> toggleObstacleMode());
         controlsButton.setOnAction(e -> showControls());
         exitButton.setOnAction(e -> ((Stage) exitButton.getScene().getWindow()).close());
 
         // add button animations
         addButtonAnimation(playButton);
         addButtonAnimation(levelButton);
+        addButtonAnimation(obstacleButton);
         addButtonAnimation(controlsButton);
         addButtonAnimation(exitButton);
 
@@ -132,6 +137,7 @@ public class MenuController {
 
             // Pass the selected difficulty level to the game controller
             controller.setDifficultyLevel(difficultyManager.getCurrentLevel());
+            controller.setObstacleMode(obstacleMode);
 
             Stage stage = (Stage) playButton.getScene().getWindow();
             Scene gameScene = new Scene(root);
@@ -153,8 +159,34 @@ public class MenuController {
         updateLevelButtonText();
     }
 
+    @FXML
+    private void toggleObstacleMode() {
+        obstacleMode = !obstacleMode;
+        updateObstacleModeButton();
+    }
+
     private void updateLevelButtonText() {
         levelButton.setText("LEVEL " + difficultyManager.getCurrentLevel());
+    }
+
+    private void updateObstacleModeButton() {
+        if (obstacleMode) {
+            obstacleButton.setText("🚧 OBSTACLES ON");
+            obstacleButton.setStyle(
+                    "-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 50; -fx-font-family: 'Courier New'; " +
+                            "-fx-background-color: linear-gradient(to bottom, #ff6b35, #ee5a6f); " +
+                            "-fx-text-fill: white; -fx-border-radius: 8; -fx-background-radius: 8; " +
+                            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5); " +
+                            "-fx-cursor: hand;");
+        } else {
+            obstacleButton.setText("🚧 OBSTACLES OFF");
+            obstacleButton.setStyle(
+                    "-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 50; -fx-font-family: 'Courier New'; " +
+                            "-fx-background-color: linear-gradient(to bottom, #8B4513, #654321); " +
+                            "-fx-text-fill: white; -fx-border-radius: 8; -fx-background-radius: 8; " +
+                            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5); " +
+                            "-fx-cursor: hand;");
+        }
     }
 
     private void showControls() {

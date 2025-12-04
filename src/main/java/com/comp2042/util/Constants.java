@@ -63,6 +63,7 @@ public final class Constants {
         public static final Color S_PIECE = Color.RED; // Green S-piece
         public static final Color T_PIECE = Color.BEIGE; // Purple T-piece
         public static final Color Z_PIECE = Color.BURLYWOOD; // Red Z-piece
+        public static final Color OBSTACLE = Color.web("#8B4513"); // Brown/dark tan for obstacles
 
         public static Color getColor(int colorCode) {
             switch (colorCode) {
@@ -82,6 +83,8 @@ public final class Constants {
                     return T_PIECE;
                 case 7:
                     return Z_PIECE;
+                case 8:
+                    return OBSTACLE;
                 default:
                     return TRANSPARENT;
             }

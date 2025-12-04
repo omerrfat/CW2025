@@ -88,6 +88,7 @@ public class GuiController implements Initializable {
     private InputEventListener eventListener;
     private Timeline timeLine;
     private int currentDifficultyLevel = 1; // Default to level 1
+    private boolean obstacleMode = false; // Obstacle Mode flag
 
     // ========== NEW MANAGERS (Refactored Components) ==========
     private BrickRenderer brickRenderer;
@@ -119,6 +120,15 @@ public class GuiController implements Initializable {
      */
     public void setDifficultyLevel(int level) {
         this.currentDifficultyLevel = level;
+    }
+
+    /**
+     * Enables or disables Obstacle Mode.
+     * 
+     * @param enable true to enable obstacle mode, false to disable
+     */
+    public void setObstacleMode(boolean enable) {
+        this.obstacleMode = enable;
     }
 
     /**
@@ -210,6 +220,9 @@ public class GuiController implements Initializable {
         initializeNextBrickPreview(brick);
         initializeHoldPreview();
         startGameLoop();
+
+        // activate obstacle mode after board is initialized
+        activateObstacleMode();
     }
 
     private void initializeBoard(int[][] boardMatrix) {
@@ -795,6 +808,10 @@ public class GuiController implements Initializable {
         timeLine.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
+        // Re-enable obstacle mode if it was active
+        if (obstacleMode && eventListener instanceof GameController) {
+            ((GameController) eventListener).enableObstacleMode(currentDifficultyLevel);
+        }
         gamePanel.requestFocus();
         timeLine.play();
         gameStateManager.startGame();
@@ -902,5 +919,16 @@ public class GuiController implements Initializable {
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         inputHandler.setEventListener(eventListener);
+    }
+
+    /**
+     * Enable obstacle mode after initialization is complete.
+     * Called after the game board is initialized.
+     */
+    public void activateObstacleMode() {
+        // Enable obstacle mode if flag is set
+        if (obstacleMode && eventListener instanceof GameController && displayMatrix != null) {
+            ((GameController) eventListener).enableObstacleMode(currentDifficultyLevel);
+        }
     }
 }

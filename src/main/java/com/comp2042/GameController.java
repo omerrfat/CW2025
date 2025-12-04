@@ -9,12 +9,13 @@ package com.comp2042;
  * - Updating the GUI with game state changes
  * - Managing score tracking
  * - Handling game over and restart conditions
+ * - Managing Obstacle Mode challenges
  * 
  * Implements InputEventListener to receive all input events
  * (movement, rotation, hard drop, hold).
  * 
  * @author Umer Imran
- * @version 2.0
+ * @version 2.1
  */
 public class GameController implements InputEventListener {
 
@@ -23,6 +24,9 @@ public class GameController implements InputEventListener {
     private Board board = new SimpleBoard(25, 10);
 
     private GuiController viewGuiController;
+    private ObstacleManager obstacleManager;
+    private boolean obstacleMode = false;
+    private int currentDifficultyLevel = 1;
 
     /**
      * Initializes the GameController with UI reference and initial board state.
@@ -31,10 +35,37 @@ public class GameController implements InputEventListener {
      */
     public GameController(GuiController c) {
         viewGuiController = c;
+        obstacleManager = new ObstacleManager();
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+    }
+
+    /**
+     * Enables Obstacle Mode and generates obstacles based on difficulty level.
+     * 
+     * @param difficultyLevel the current game difficulty (1, 5, 10, or 15)
+     */
+    public void enableObstacleMode(int difficultyLevel) {
+        this.obstacleMode = true;
+        this.currentDifficultyLevel = difficultyLevel;
+
+        // Generate and place obstacles
+        int[][] obstacles = obstacleManager.generateObstacles(difficultyLevel);
+        ObstacleManager.placeObstacles(board.getBoardMatrix(), obstacles);
+
+        // Refresh the display to show obstacles
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+    }
+
+    /**
+     * Check if Obstacle Mode is enabled.
+     * 
+     * @return true if in obstacle mode
+     */
+    public boolean isObstacleMode() {
+        return obstacleMode;
     }
 
     /**
