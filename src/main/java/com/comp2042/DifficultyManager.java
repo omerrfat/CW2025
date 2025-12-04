@@ -3,12 +3,10 @@ package com.comp2042;
 /**
  * DifficultyManager - Manages game difficulty levels and their associated game
  * speeds.
- * 
  * Handles the mapping between difficulty levels (1, 5, 10, 15) and brick fall
  * speeds.
- * Level 1 is the easiest (slowest fall) and Level 15 is the hardest (fastest
+ * Level 1 is the easiest (the slowest fall), and Level 15 is the hardest (the fastest
  * fall).
- * 
  * Responsibilities:
  * - Store and retrieve current difficulty level
  * - Calculate brick fall delay based on difficulty level
@@ -40,7 +38,7 @@ public class DifficultyManager {
      * Valid levels: 1, 5, 10, 15
      * 
      * @param level the difficulty level to set
-     * @throws IllegalArgumentException if level is not a valid difficulty level
+     * @throws IllegalArgumentException if a level is not a valid difficulty level
      */
     public void setLevel(int level) {
         if (level == LEVEL_1 || level == LEVEL_5 || level == LEVEL_10 || level == LEVEL_15) {
@@ -63,11 +61,10 @@ public class DifficultyManager {
     /**
      * Gets the brick fall delay in milliseconds for the current difficulty level.
      * Lower delay = faster falling = harder difficulty.
-     * 
-     * Level 1: 1000ms (Normal)
-     * Level 5: 700ms (Medium)
-     * Level 10: 400ms (Hard)
-     * Level 15: 150ms (Very Hard)
+     * Level 1: 1000 ms (Normal)
+     * Level 5: 700 ms (Medium)
+     * Level 10: 400 ms (Hard)
+     * Level 15: 150 ms (Very Hard)
      * 
      * @return the delay in milliseconds between brick falls
      */
@@ -82,19 +79,15 @@ public class DifficultyManager {
      * @return the delay in milliseconds between brick falls
      */
     public static int getDelayForLevel(int level) {
-        switch (level) {
-            case LEVEL_1:
-                return 1000; // Normal speed
-            case LEVEL_5:
-                return 700; // Medium speed
-            case LEVEL_10:
-                return 400; // Hard speed
-            case LEVEL_15:
-                return 150; // Very hard speed
-            default:
+        return switch (level) {
+            case LEVEL_1 -> 1000; // Normal speed
+            case LEVEL_5 -> 700; // Medium speed
+            case LEVEL_10 -> 400; // Hard speed
+            case LEVEL_15 -> 150; // Very hard speed
+            default ->
                 // Fallback formula for levels outside the predefined range
-                return Math.max(100, 1000 - (level * 50));
-        }
+                    Math.max(100, 1000 - (level * 50));
+        };
     }
 
     /**
@@ -113,18 +106,13 @@ public class DifficultyManager {
      * @return a string describing the difficulty
      */
     public static String getLevelDescription(int level) {
-        switch (level) {
-            case LEVEL_1:
-                return "LEVEL 1 - NORMAL";
-            case LEVEL_5:
-                return "LEVEL 5 - MEDIUM";
-            case LEVEL_10:
-                return "LEVEL 10 - HARD";
-            case LEVEL_15:
-                return "LEVEL 15 - EXTREME";
-            default:
-                return "LEVEL " + level;
-        }
+        return switch (level) {
+            case LEVEL_1 -> "LEVEL 1 - NORMAL";
+            case LEVEL_5 -> "LEVEL 5 - MEDIUM";
+            case LEVEL_10 -> "LEVEL 10 - HARD";
+            case LEVEL_15 -> "LEVEL 15 - EXTREME";
+            default -> "LEVEL " + level;
+        };
     }
 
     /**
@@ -157,17 +145,11 @@ public class DifficultyManager {
      * @return the next level in the cycle
      */
     public int getNextLevel() {
-        switch (currentLevel) {
-            case LEVEL_1:
-                return LEVEL_5;
-            case LEVEL_5:
-                return LEVEL_10;
-            case LEVEL_10:
-                return LEVEL_15;
-            case LEVEL_15:
-                return LEVEL_1;
-            default:
-                return LEVEL_1;
-        }
+        return switch (currentLevel) {
+            case LEVEL_1 -> LEVEL_5;
+            case LEVEL_5 -> LEVEL_10;
+            case LEVEL_10 -> LEVEL_15;
+            default -> LEVEL_1;
+        };
     }
 }
