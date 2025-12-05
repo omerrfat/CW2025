@@ -199,14 +199,14 @@ public class MenuController {
                           ← / A  →  / D    Move Left / Right
                           ↓ / S             Move Down (Soft Drop)
                           Space             Hard Drop (Instant Fall)
-                        
+
                         ROTATION:
                           ↑ / W             Rotate Brick
-                        
+
                         GAME CONTROLS:
                           P                  Pause / Resume Game
                           R / N              Restart Game
-                        
+
                         STRATEGY TIPS:
                           • Plan your moves ahead
                           • Fill lines completely to clear them

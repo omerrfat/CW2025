@@ -46,7 +46,6 @@ import java.util.ResourceBundle;
  * - Displaying score and high score
  * - Showing the held piece in the hold window
  * - Animating line clears with visual feedback
- * 
  * The controller communicates with GameController for game logic
  * and receives updates via ViewData objects.
  * 
@@ -344,7 +343,8 @@ public class GuiController implements Initializable {
             int x = coord[1];
             int y = coord[0];
 
-            // Only draw ghost piece if it's visible on the board (y >= 2 to account for hidden rows)
+            // Only draw ghost piece if it's visible on the board (y >= 2 to account for
+            // hidden rows)
             if (y >= 2) {
                 Rectangle ghostBlock = createGhostBlock();
                 GridPane.setColumnIndex(ghostBlock, x);

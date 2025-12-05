@@ -5,7 +5,8 @@ package com.comp2042.game;
  * speeds.
  * Handles the mapping between difficulty levels (1, 5, 10, 15) and brick fall
  * speeds.
- * Level 1 is the easiest (the slowest fall), and Level 15 is the hardest (the fastest
+ * Level 1 is the easiest (the slowest fall), and Level 15 is the hardest (the
+ * fastest
  * fall).
  * Responsibilities:
  * - Store and retrieve current difficulty level
@@ -86,7 +87,7 @@ public class DifficultyManager {
             case LEVEL_15 -> 150; // Very hard speed
             default ->
                 // Fallback formula for levels outside the predefined range
-                    Math.max(100, 1000 - (level * 50));
+                Math.max(100, 1000 - (level * 50));
         };
     }
 
