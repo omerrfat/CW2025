@@ -1,3 +1,9 @@
 com.comp2042
+com.comp2042.dto
+com.comp2042.event
+com.comp2042.game
+com.comp2042.logic
 com.comp2042.logic.bricks
+com.comp2042.ui
+com.comp2042.ui.input
 com.comp2042.util

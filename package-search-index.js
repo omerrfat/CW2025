@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"com.comp2042"},{"l":"com.comp2042.logic.bricks"},{"l":"com.comp2042.util"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"com.comp2042"},{"l":"com.comp2042.dto"},{"l":"com.comp2042.event"},{"l":"com.comp2042.game"},{"l":"com.comp2042.logic"},{"l":"com.comp2042.logic.bricks"},{"l":"com.comp2042.ui"},{"l":"com.comp2042.ui.input"},{"l":"com.comp2042.util"}];updateSearchResults();
